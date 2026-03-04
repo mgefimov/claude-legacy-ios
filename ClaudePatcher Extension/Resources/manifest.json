@@ -21,8 +21,14 @@
 
     "content_scripts": [{
         "js": [ "content.js" ],
-        "matches": [ "*://example.com/*" ]
+        "matches": [ "*://claude.ai/*" ],
+        "run_at": "document_start",
+        "all_frames": true
     }],
+
+    "host_permissions": [
+        "*://assets-proxy.anthropic.com/*"
+    ],
 
     "action": {
         "default_popup": "popup.html",
