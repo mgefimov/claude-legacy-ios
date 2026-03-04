@@ -17,15 +17,28 @@
 
 @implementation ViewController
 
+- (void) injectPatch {
+    NSBundle *extensionBundle = [NSBundle bundleWithURL:[NSBundle.mainBundle URLForResource:@"ClaudePatcher Extension" withExtension:@"appex" subdirectory:@"PlugIns"]];
+    NSURL *scriptURL = [extensionBundle URLForResource:@"content" withExtension:@"js"];
+
+    NSString *js = [NSString stringWithContentsOfURL:scriptURL encoding:NSUTF8StringEncoding error:nil];
+    if (js) {
+        WKUserScript *userScript = [[WKUserScript alloc] initWithSource:js injectionTime:WKUserScriptInjectionTimeAtDocumentStart forMainFrameOnly:YES];
+        [_webView.configuration.userContentController addUserScript:userScript];
+    }
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
 
     _webView.navigationDelegate = self;
-    _webView.scrollView.scrollEnabled = NO;
+    _webView.scrollView.scrollEnabled = YES;
 
     [_webView.configuration.userContentController addScriptMessageHandler:self name:@"controller"];
 
-    [_webView loadFileURL:[NSBundle.mainBundle URLForResource:@"Main" withExtension:@"html"] allowingReadAccessToURL:NSBundle.mainBundle.resourceURL];
+    [self injectPatch];
+
+    [_webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:@"https://claude.ai"]]];
 }
 
 - (void)webView:(WKWebView *)webView didFinishNavigation:(WKNavigation *)navigation {
