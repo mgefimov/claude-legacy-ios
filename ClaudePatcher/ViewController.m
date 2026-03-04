@@ -31,6 +31,14 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
 
+    self.view.backgroundColor = [UIColor colorWithDynamicProvider:^UIColor *(UITraitCollection *tc) {
+        return tc.userInterfaceStyle == UIUserInterfaceStyleDark
+            ? [UIColor colorWithRed:0x26/255.0 green:0x26/255.0 blue:0x24/255.0 alpha:1.0]   // #262624
+            : [UIColor colorWithRed:0xF8/255.0 green:0xF7/255.0 blue:0xF3/255.0 alpha:1.0];  // #F8F7F3
+    }];
+
+    _webView.opaque = NO;
+    _webView.backgroundColor = UIColor.clearColor;
     _webView.navigationDelegate = self;
     _webView.scrollView.scrollEnabled = YES;
 
@@ -39,6 +47,10 @@
     [self injectPatch];
 
     [_webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:@"https://claude.ai"]]];
+}
+
+- (UIStatusBarStyle)preferredStatusBarStyle {
+    return UIStatusBarStyleDefault;
 }
 
 - (void)webView:(WKWebView *)webView didFinishNavigation:(WKNavigation *)navigation {
