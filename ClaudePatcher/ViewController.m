@@ -37,6 +37,10 @@
             : [UIColor colorWithRed:0xF8/255.0 green:0xF7/255.0 blue:0xF3/255.0 alpha:1.0];  // #F8F7F3
     }];
 
+    UIRefreshControl *refreshControl = [[UIRefreshControl alloc] init];
+    [refreshControl addTarget:self action:@selector(handleRefresh:) forControlEvents:UIControlEventValueChanged];
+    _webView.scrollView.refreshControl = refreshControl;
+
     _webView.opaque = NO;
     _webView.backgroundColor = UIColor.clearColor;
     _webView.navigationDelegate = self;
@@ -53,8 +57,12 @@
     return UIStatusBarStyleDefault;
 }
 
+- (void)handleRefresh:(UIRefreshControl *)refreshControl {
+    [_webView reload];
+}
+
 - (void)webView:(WKWebView *)webView didFinishNavigation:(WKNavigation *)navigation {
-    // Override point for customization.
+    [webView.scrollView.refreshControl endRefreshing];
 }
 
 - (void)userContentController:(WKUserContentController *)userContentController didReceiveScriptMessage:(WKScriptMessage *)message
