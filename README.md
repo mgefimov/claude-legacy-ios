@@ -1,22 +1,28 @@
-# ClaudePatcher
+# Claude Patcher
 
-The official Claude app from Anthropic requires **iOS 18** 😱
+> Run [Claude](https://claude.ai) on older iOS versions — no iOS 18 required.
 
-The claude.ai website works starting from **iOS 16.4** 😮‍💨
+The official Claude app from Anthropic requires **iOS 18**. The claude.ai website works starting from **iOS 16.4**. This project goes further, bringing Claude to **iOS 15** and potentially earlier.
 
-## How it works
+<p align="center">
+  <img src="assets/screenshot_1.PNG" width="300" alt="Claude running on iOS 15"/>
+</p>
 
-It's just a WKWebView + a JS extension that patches the website.
+## How It Works
 
+Claude Patcher is a lightweight native iOS app that wraps claude.ai in a `WKWebView` and injects a JavaScript patch at page load. The patch rewrites incompatible ES2022+ syntax (like class static initialization blocks) that older Safari versions can't parse, allowing the site to load and run normally.
 
 ## Installation
 
-1. Download the `.ipa` from [Releases](https://github.com/nicklama/ClaudePatcher/releases)
-2. Install it using [TrollStore](https://github.com/opa334/TrollStore) or any other sideloading method
+1. Download the latest `.ipa` from [Releases](https://github.com/mgefimov/claude-legacy-ios/releases)
+2. Install using [TrollStore](https://github.com/opa334/TrollStore) or any other sideloading method (e.g. [AltStore](https://altstore.io), [Sideloadly](https://sideloadly.io))
 
-## Tested on
-- iPhone 13, ios 15.5
+## Compatibility
 
-## Known issues
-- Login via Google doesn't work
-- After login you have to restart the app
+| Device | iOS Version | Status |
+|--------|-------------|--------|
+| iPhone 13 | 15.5 | ✅ Verified |
+
+## Known Issues
+
+- **Google login doesn't work** — use email login instead
