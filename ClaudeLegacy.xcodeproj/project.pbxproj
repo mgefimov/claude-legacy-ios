@@ -607,6 +607,7 @@
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = R743P2D925;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "ClaudeLegacy Extension/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "ClaudeLegacy Extension";
@@ -635,6 +636,7 @@
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = R743P2D925;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "ClaudeLegacy Extension/Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = "ClaudeLegacy Extension";
@@ -665,6 +667,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = R743P2D925;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = ClaudeLegacy/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Claude;
@@ -678,7 +681,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.0.1;
 				OTHER_LDFLAGS = (
 					"-framework",
 					SafariServices,
@@ -699,6 +702,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = R743P2D925;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = ClaudeLegacy/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Claude;
@@ -712,7 +716,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.0.1;
 				OTHER_LDFLAGS = (
 					"-framework",
 					SafariServices,
