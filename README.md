@@ -1,4 +1,4 @@
-# Claude Patcher
+# Claude Legacy
 
 > Run [Claude](https://claude.ai) on older iOS versions — no iOS 18 required.
 
@@ -10,7 +10,7 @@ The official Claude app from Anthropic requires **iOS 18**. The claude.ai websit
 
 ## How It Works
 
-Claude Patcher is a lightweight native iOS app that wraps claude.ai in a `WKWebView` and injects a JavaScript patch at page load. The patch rewrites incompatible ES2022+ syntax (like class static initialization blocks) that older Safari versions can't parse, allowing the site to load and run normally.
+Claude Legacy is a lightweight native iOS app that wraps claude.ai in a `WKWebView` and injects a JavaScript patch at page load. The patch rewrites incompatible ES2022+ syntax (like class static initialization blocks) that older Safari versions can't parse, allowing the site to load and run normally.
 
 ## Installation
 

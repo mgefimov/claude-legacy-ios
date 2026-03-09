@@ -1,0 +1,45 @@
+{
+    "manifest_version": 2,
+    "default_locale": "en",
+
+    "name": "Claude",
+    "description": "__MSG_extension_description__",
+    "version": "1.0",
+
+    "icons": {
+        "16": "images/icon16.png",
+        "32": "images/icon32.png",
+        "48": "images/icon48.png",
+        "128": "images/icon128.png"
+    },
+
+    "background": {
+        "scripts": [ "background.js" ],
+        "persistent": false
+    },
+
+    "content_scripts": [{
+        "js": [ "content.js" ],
+        "matches": [ "*://claude.ai/*" ],
+        "run_at": "document_start",
+        "all_frames": true
+    }],
+
+    "browser_action": {
+        "default_popup": "popup.html",
+        "default_icon": {
+            "16": "images/toolbar-icon-16.png",
+            "19": "images/toolbar-icon-19.png",
+            "32": "images/toolbar-icon-32.png",
+            "38": "images/toolbar-icon-38.png",
+            "48": "images/toolbar-icon-48.png",
+            "72": "images/toolbar-icon-72.png"
+        }
+    },
+    
+    "host_permissions": [
+        "*://assets-proxy.anthropic.com/*"
+    ],
+
+    "permissions": [ ]
+}
