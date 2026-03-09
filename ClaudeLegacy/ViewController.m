@@ -29,6 +29,28 @@
     }
 }
 
+- (void)injectCustomCSS {
+    NSString *css = @"button[data-testid='login-with-google'] { display: none !important; }"
+                     "button[data-testid='login-with-google'] + p { display: none !important; }";
+    NSString *js = [NSString stringWithFormat:
+        @"(function(){"
+         "var s=document.createElement('style');"
+         "s.textContent=%@;"
+         "document.head.appendChild(s);"
+         "})()", [self jsStringLiteral:css]];
+    WKUserScript *script = [[WKUserScript alloc] initWithSource:js
+                                                  injectionTime:WKUserScriptInjectionTimeAtDocumentEnd
+                                                 forMainFrameOnly:YES];
+    [_webView.configuration.userContentController addUserScript:script];
+}
+
+- (NSString *)jsStringLiteral:(NSString *)str {
+    NSString *escaped = [str stringByReplacingOccurrencesOfString:@"\\" withString:@"\\\\"];
+    escaped = [escaped stringByReplacingOccurrencesOfString:@"'" withString:@"\\'"];
+    escaped = [escaped stringByReplacingOccurrencesOfString:@"\n" withString:@"\\n"];
+    return [NSString stringWithFormat:@"'%@'", escaped];
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
 
@@ -48,7 +70,8 @@
     _webView.scrollView.scrollEnabled = YES;
 
     [_webView.configuration.userContentController addScriptMessageHandler:self name:@"controller"];
-
+    
+    [self injectCustomCSS];
     [self injectPatch];
     [PolyfillsLoader injectPolyfillsIntoController:_webView.configuration.userContentController];
 
