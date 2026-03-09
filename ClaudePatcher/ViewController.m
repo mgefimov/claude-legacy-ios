@@ -17,6 +17,21 @@
 
 @implementation ViewController
 
+- (void) injectBabel {
+  NSString *babelPath = [[NSBundle mainBundle] pathForResource:@"babel.min" ofType:@"js"];
+  NSString *babelSource = [NSString stringWithContentsOfFile:babelPath
+                                                    encoding:NSUTF8StringEncoding
+                                                       error:nil];
+
+  WKUserScript *babelScript = [[WKUserScript alloc]
+      initWithSource:babelSource
+      injectionTime:WKUserScriptInjectionTimeAtDocumentStart
+      forMainFrameOnly:NO];
+  
+
+  [_webView.configuration.userContentController addUserScript:babelScript];
+}
+
 - (void) injectPatch {
     NSBundle *extensionBundle = [NSBundle bundleWithURL:[NSBundle.mainBundle URLForResource:@"ClaudePatcher Extension" withExtension:@"appex" subdirectory:@"PlugIns"]];
     NSURL *scriptURL = [extensionBundle URLForResource:@"content" withExtension:@"js"];
@@ -47,7 +62,23 @@
     _webView.scrollView.scrollEnabled = YES;
 
     [_webView.configuration.userContentController addScriptMessageHandler:self name:@"controller"];
+  
+  
+  NSString *rules = @"["
+      "{\"trigger\":{\"url-filter\":\"intercom\"},\"action\":{\"type\":\"block\"}},"
+      "{\"trigger\":{\"url-filter\":\"intercomcdn\"},\"action\":{\"type\":\"block\"}}"
+      "]";
 
+  [WKContentRuleListStore.defaultStore
+      compileContentRuleListForIdentifier:@"blockThirdParty"
+                   encodedContentRuleList:rules
+                        completionHandler:^(WKContentRuleList *list, NSError *error) {
+      if (list) {
+          [_webView.configuration.userContentController addContentRuleList:list];
+      }
+  }];
+  
+    [self injectBabel];
     [self injectPatch];
 
     [_webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:@"https://claude.ai"]]];
