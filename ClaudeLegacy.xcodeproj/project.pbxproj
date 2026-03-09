@@ -1,0 +1,834 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 55;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		CEADC8192F5E8F26000F74EA /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CEADC8182F5E8F26000F74EA /* AppDelegate.m */; };
+		CEADC81D2F5E8F26000F74EA /* Main.html in Resources */ = {isa = PBXBuildFile; fileRef = CEADC81B2F5E8F26000F74EA /* Main.html */; };
+		CEADC81F2F5E8F26000F74EA /* Icon.png in Resources */ = {isa = PBXBuildFile; fileRef = CEADC81E2F5E8F26000F74EA /* Icon.png */; };
+		CEADC8212F5E8F26000F74EA /* Style.css in Resources */ = {isa = PBXBuildFile; fileRef = CEADC8202F5E8F26000F74EA /* Style.css */; };
+		CEADC8242F5E8F26000F74EA /* SceneDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CEADC8232F5E8F26000F74EA /* SceneDelegate.m */; };
+		CEADC8272F5E8F26000F74EA /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CEADC8262F5E8F26000F74EA /* ViewController.m */; };
+		CEADC82A2F5E8F26000F74EA /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CEADC8282F5E8F26000F74EA /* LaunchScreen.storyboard */; };
+		CEADC82D2F5E8F26000F74EA /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CEADC82B2F5E8F26000F74EA /* Main.storyboard */; };
+		CEADC8312F5E8F29000F74EA /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = CEADC8302F5E8F29000F74EA /* main.m */; };
+		CEADC83B2F5E8F29000F74EA /* ClaudeLegacyTests.m in Sources */ = {isa = PBXBuildFile; fileRef = CEADC83A2F5E8F29000F74EA /* ClaudeLegacyTests.m */; };
+		CEADC8452F5E8F29000F74EA /* ClaudeLegacyUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = CEADC8442F5E8F29000F74EA /* ClaudeLegacyUITests.m */; };
+		CEADC8472F5E8F29000F74EA /* ClaudeLegacyUITestsLaunchTests.m in Sources */ = {isa = PBXBuildFile; fileRef = CEADC8462F5E8F29000F74EA /* ClaudeLegacyUITestsLaunchTests.m */; };
+		CEADC84D2F5E8F29000F74EA /* ClaudeLegacy Extension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = CEADC84C2F5E8F29000F74EA /* ClaudeLegacy Extension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		CEADC8532F5E8F29000F74EA /* SafariWebExtensionHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = CEADC8522F5E8F29000F74EA /* SafariWebExtensionHandler.m */; };
+		CEADC8562F5E8F29000F74EA /* _locales in Resources */ = {isa = PBXBuildFile; fileRef = CEADC8552F5E8F29000F74EA /* _locales */; };
+		CEADC8582F5E8F29000F74EA /* images in Resources */ = {isa = PBXBuildFile; fileRef = CEADC8572F5E8F29000F74EA /* images */; };
+		CEADC85A2F5E8F29000F74EA /* manifest.json in Resources */ = {isa = PBXBuildFile; fileRef = CEADC8592F5E8F29000F74EA /* manifest.json */; };
+		CEADC85C2F5E8F29000F74EA /* background.js in Resources */ = {isa = PBXBuildFile; fileRef = CEADC85B2F5E8F29000F74EA /* background.js */; };
+		CEADC85E2F5E8F29000F74EA /* content.js in Resources */ = {isa = PBXBuildFile; fileRef = CEADC85D2F5E8F29000F74EA /* content.js */; };
+		CEADC8602F5E8F29000F74EA /* popup.html in Resources */ = {isa = PBXBuildFile; fileRef = CEADC85F2F5E8F29000F74EA /* popup.html */; };
+		CEADC8622F5E8F29000F74EA /* popup.css in Resources */ = {isa = PBXBuildFile; fileRef = CEADC8612F5E8F29000F74EA /* popup.css */; };
+		CEADC8642F5E8F29000F74EA /* popup.js in Resources */ = {isa = PBXBuildFile; fileRef = CEADC8632F5E8F29000F74EA /* popup.js */; };
+		CEADC8662F5E8F29000F74EA /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CEADC82E2F5E8F29000F74EA /* Assets.xcassets */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		CEADC8372F5E8F29000F74EA /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = CEADC80C2F5E8F26000F74EA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = CEADC8132F5E8F26000F74EA;
+			remoteInfo = ClaudeLegacy;
+		};
+		CEADC8412F5E8F29000F74EA /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = CEADC80C2F5E8F26000F74EA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = CEADC8132F5E8F26000F74EA;
+			remoteInfo = ClaudeLegacy;
+		};
+		CEADC84E2F5E8F29000F74EA /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = CEADC80C2F5E8F26000F74EA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = CEADC84B2F5E8F29000F74EA;
+			remoteInfo = "ClaudeLegacy Extension";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		CEADC86C2F5E8F29000F74EA /* Embed App Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				CEADC84D2F5E8F29000F74EA /* ClaudeLegacy Extension.appex in Embed App Extensions */,
+			);
+			name = "Embed App Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		CEADC8142F5E8F26000F74EA /* ClaudeLegacy.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ClaudeLegacy.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		CEADC8172F5E8F26000F74EA /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		CEADC8182F5E8F26000F74EA /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		CEADC81C2F5E8F26000F74EA /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.html; name = Base; path = ../Base.lproj/Main.html; sourceTree = "<group>"; };
+		CEADC81E2F5E8F26000F74EA /* Icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Icon.png; sourceTree = "<group>"; };
+		CEADC8202F5E8F26000F74EA /* Style.css */ = {isa = PBXFileReference; lastKnownFileType = text.css; path = Style.css; sourceTree = "<group>"; };
+		CEADC8222F5E8F26000F74EA /* SceneDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SceneDelegate.h; sourceTree = "<group>"; };
+		CEADC8232F5E8F26000F74EA /* SceneDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SceneDelegate.m; sourceTree = "<group>"; };
+		CEADC8252F5E8F26000F74EA /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
+		CEADC8262F5E8F26000F74EA /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
+		CEADC8292F5E8F26000F74EA /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		CEADC82C2F5E8F26000F74EA /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		CEADC82E2F5E8F29000F74EA /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		CEADC82F2F5E8F29000F74EA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		CEADC8302F5E8F29000F74EA /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		CEADC8362F5E8F29000F74EA /* ClaudeLegacyTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ClaudeLegacyTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		CEADC83A2F5E8F29000F74EA /* ClaudeLegacyTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ClaudeLegacyTests.m; sourceTree = "<group>"; };
+		CEADC8402F5E8F29000F74EA /* ClaudeLegacyUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ClaudeLegacyUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		CEADC8442F5E8F29000F74EA /* ClaudeLegacyUITests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ClaudeLegacyUITests.m; sourceTree = "<group>"; };
+		CEADC8462F5E8F29000F74EA /* ClaudeLegacyUITestsLaunchTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ClaudeLegacyUITestsLaunchTests.m; sourceTree = "<group>"; };
+		CEADC84C2F5E8F29000F74EA /* ClaudeLegacy Extension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "ClaudeLegacy Extension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
+		CEADC8512F5E8F29000F74EA /* SafariWebExtensionHandler.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SafariWebExtensionHandler.h; sourceTree = "<group>"; };
+		CEADC8522F5E8F29000F74EA /* SafariWebExtensionHandler.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SafariWebExtensionHandler.m; sourceTree = "<group>"; };
+		CEADC8552F5E8F29000F74EA /* _locales */ = {isa = PBXFileReference; lastKnownFileType = folder; path = _locales; sourceTree = "<group>"; };
+		CEADC8572F5E8F29000F74EA /* images */ = {isa = PBXFileReference; lastKnownFileType = folder; path = images; sourceTree = "<group>"; };
+		CEADC8592F5E8F29000F74EA /* manifest.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = manifest.json; sourceTree = "<group>"; };
+		CEADC85B2F5E8F29000F74EA /* background.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = background.js; sourceTree = "<group>"; };
+		CEADC85D2F5E8F29000F74EA /* content.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = content.js; sourceTree = "<group>"; };
+		CEADC85F2F5E8F29000F74EA /* popup.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = popup.html; sourceTree = "<group>"; };
+		CEADC8612F5E8F29000F74EA /* popup.css */ = {isa = PBXFileReference; lastKnownFileType = text.css; path = popup.css; sourceTree = "<group>"; };
+		CEADC8632F5E8F29000F74EA /* popup.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = popup.js; sourceTree = "<group>"; };
+		CEADC8652F5E8F29000F74EA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		CEADC8112F5E8F26000F74EA /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		CEADC8332F5E8F29000F74EA /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		CEADC83D2F5E8F29000F74EA /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		CEADC8492F5E8F29000F74EA /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		CEADC80B2F5E8F26000F74EA = {
+			isa = PBXGroup;
+			children = (
+				CEADC8162F5E8F26000F74EA /* ClaudeLegacy */,
+				CEADC8392F5E8F29000F74EA /* ClaudeLegacyTests */,
+				CEADC8432F5E8F29000F74EA /* ClaudeLegacyUITests */,
+				CEADC8502F5E8F29000F74EA /* ClaudeLegacy Extension */,
+				CEADC8152F5E8F26000F74EA /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		CEADC8152F5E8F26000F74EA /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				CEADC8142F5E8F26000F74EA /* ClaudeLegacy.app */,
+				CEADC8362F5E8F29000F74EA /* ClaudeLegacyTests.xctest */,
+				CEADC8402F5E8F29000F74EA /* ClaudeLegacyUITests.xctest */,
+				CEADC84C2F5E8F29000F74EA /* ClaudeLegacy Extension.appex */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		CEADC8162F5E8F26000F74EA /* ClaudeLegacy */ = {
+			isa = PBXGroup;
+			children = (
+				CEADC8172F5E8F26000F74EA /* AppDelegate.h */,
+				CEADC8182F5E8F26000F74EA /* AppDelegate.m */,
+				CEADC8222F5E8F26000F74EA /* SceneDelegate.h */,
+				CEADC8232F5E8F26000F74EA /* SceneDelegate.m */,
+				CEADC8252F5E8F26000F74EA /* ViewController.h */,
+				CEADC8262F5E8F26000F74EA /* ViewController.m */,
+				CEADC8282F5E8F26000F74EA /* LaunchScreen.storyboard */,
+				CEADC82B2F5E8F26000F74EA /* Main.storyboard */,
+				CEADC82E2F5E8F29000F74EA /* Assets.xcassets */,
+				CEADC82F2F5E8F29000F74EA /* Info.plist */,
+				CEADC8302F5E8F29000F74EA /* main.m */,
+				CEADC81A2F5E8F26000F74EA /* Resources */,
+			);
+			path = ClaudeLegacy;
+			sourceTree = "<group>";
+		};
+		CEADC81A2F5E8F26000F74EA /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				CEADC81B2F5E8F26000F74EA /* Main.html */,
+				CEADC81E2F5E8F26000F74EA /* Icon.png */,
+				CEADC8202F5E8F26000F74EA /* Style.css */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		CEADC8392F5E8F29000F74EA /* ClaudeLegacyTests */ = {
+			isa = PBXGroup;
+			children = (
+				CEADC83A2F5E8F29000F74EA /* ClaudeLegacyTests.m */,
+			);
+			path = ClaudeLegacyTests;
+			sourceTree = "<group>";
+		};
+		CEADC8432F5E8F29000F74EA /* ClaudeLegacyUITests */ = {
+			isa = PBXGroup;
+			children = (
+				CEADC8442F5E8F29000F74EA /* ClaudeLegacyUITests.m */,
+				CEADC8462F5E8F29000F74EA /* ClaudeLegacyUITestsLaunchTests.m */,
+			);
+			path = ClaudeLegacyUITests;
+			sourceTree = "<group>";
+		};
+		CEADC8502F5E8F29000F74EA /* ClaudeLegacy Extension */ = {
+			isa = PBXGroup;
+			children = (
+				CEADC8512F5E8F29000F74EA /* SafariWebExtensionHandler.h */,
+				CEADC8522F5E8F29000F74EA /* SafariWebExtensionHandler.m */,
+				CEADC8652F5E8F29000F74EA /* Info.plist */,
+				CEADC8542F5E8F29000F74EA /* Resources */,
+			);
+			path = "ClaudeLegacy Extension";
+			sourceTree = "<group>";
+		};
+		CEADC8542F5E8F29000F74EA /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				CEADC8552F5E8F29000F74EA /* _locales */,
+				CEADC8572F5E8F29000F74EA /* images */,
+				CEADC8592F5E8F29000F74EA /* manifest.json */,
+				CEADC85B2F5E8F29000F74EA /* background.js */,
+				CEADC85D2F5E8F29000F74EA /* content.js */,
+				CEADC85F2F5E8F29000F74EA /* popup.html */,
+				CEADC8612F5E8F29000F74EA /* popup.css */,
+				CEADC8632F5E8F29000F74EA /* popup.js */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		CEADC8132F5E8F26000F74EA /* ClaudeLegacy */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = CEADC86D2F5E8F29000F74EA /* Build configuration list for PBXNativeTarget "ClaudeLegacy" */;
+			buildPhases = (
+				CEADC8102F5E8F26000F74EA /* Sources */,
+				CEADC8112F5E8F26000F74EA /* Frameworks */,
+				CEADC8122F5E8F26000F74EA /* Resources */,
+				CEADC86C2F5E8F29000F74EA /* Embed App Extensions */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				CEADC84F2F5E8F29000F74EA /* PBXTargetDependency */,
+			);
+			name = ClaudeLegacy;
+			productName = ClaudeLegacy;
+			productReference = CEADC8142F5E8F26000F74EA /* ClaudeLegacy.app */;
+			productType = "com.apple.product-type.application";
+		};
+		CEADC8352F5E8F29000F74EA /* ClaudeLegacyTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = CEADC8702F5E8F29000F74EA /* Build configuration list for PBXNativeTarget "ClaudeLegacyTests" */;
+			buildPhases = (
+				CEADC8322F5E8F29000F74EA /* Sources */,
+				CEADC8332F5E8F29000F74EA /* Frameworks */,
+				CEADC8342F5E8F29000F74EA /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				CEADC8382F5E8F29000F74EA /* PBXTargetDependency */,
+			);
+			name = ClaudeLegacyTests;
+			productName = ClaudeLegacyTests;
+			productReference = CEADC8362F5E8F29000F74EA /* ClaudeLegacyTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		CEADC83F2F5E8F29000F74EA /* ClaudeLegacyUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = CEADC8732F5E8F29000F74EA /* Build configuration list for PBXNativeTarget "ClaudeLegacyUITests" */;
+			buildPhases = (
+				CEADC83C2F5E8F29000F74EA /* Sources */,
+				CEADC83D2F5E8F29000F74EA /* Frameworks */,
+				CEADC83E2F5E8F29000F74EA /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				CEADC8422F5E8F29000F74EA /* PBXTargetDependency */,
+			);
+			name = ClaudeLegacyUITests;
+			productName = ClaudeLegacyUITests;
+			productReference = CEADC8402F5E8F29000F74EA /* ClaudeLegacyUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+		CEADC84B2F5E8F29000F74EA /* ClaudeLegacy Extension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = CEADC8692F5E8F29000F74EA /* Build configuration list for PBXNativeTarget "ClaudeLegacy Extension" */;
+			buildPhases = (
+				CEADC8482F5E8F29000F74EA /* Sources */,
+				CEADC8492F5E8F29000F74EA /* Frameworks */,
+				CEADC84A2F5E8F29000F74EA /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "ClaudeLegacy Extension";
+			productName = "ClaudeLegacy Extension";
+			productReference = CEADC84C2F5E8F29000F74EA /* ClaudeLegacy Extension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		CEADC80C2F5E8F26000F74EA /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastUpgradeCheck = 1340;
+				TargetAttributes = {
+					CEADC8132F5E8F26000F74EA = {
+						CreatedOnToolsVersion = 13.4.1;
+					};
+					CEADC8352F5E8F29000F74EA = {
+						CreatedOnToolsVersion = 13.4.1;
+						TestTargetID = CEADC8132F5E8F26000F74EA;
+					};
+					CEADC83F2F5E8F29000F74EA = {
+						CreatedOnToolsVersion = 13.4.1;
+						TestTargetID = CEADC8132F5E8F26000F74EA;
+					};
+					CEADC84B2F5E8F29000F74EA = {
+						CreatedOnToolsVersion = 13.4.1;
+					};
+				};
+			};
+			buildConfigurationList = CEADC80F2F5E8F26000F74EA /* Build configuration list for PBXProject "ClaudeLegacy" */;
+			compatibilityVersion = "Xcode 13.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = CEADC80B2F5E8F26000F74EA;
+			productRefGroup = CEADC8152F5E8F26000F74EA /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				CEADC8132F5E8F26000F74EA /* ClaudeLegacy */,
+				CEADC8352F5E8F29000F74EA /* ClaudeLegacyTests */,
+				CEADC83F2F5E8F29000F74EA /* ClaudeLegacyUITests */,
+				CEADC84B2F5E8F29000F74EA /* ClaudeLegacy Extension */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		CEADC8122F5E8F26000F74EA /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CEADC81F2F5E8F26000F74EA /* Icon.png in Resources */,
+				CEADC82D2F5E8F26000F74EA /* Main.storyboard in Resources */,
+				CEADC82A2F5E8F26000F74EA /* LaunchScreen.storyboard in Resources */,
+				CEADC81D2F5E8F26000F74EA /* Main.html in Resources */,
+				CEADC8662F5E8F29000F74EA /* Assets.xcassets in Resources */,
+				CEADC8212F5E8F26000F74EA /* Style.css in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		CEADC8342F5E8F29000F74EA /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		CEADC83E2F5E8F29000F74EA /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		CEADC84A2F5E8F29000F74EA /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CEADC85C2F5E8F29000F74EA /* background.js in Resources */,
+				CEADC8622F5E8F29000F74EA /* popup.css in Resources */,
+				CEADC8602F5E8F29000F74EA /* popup.html in Resources */,
+				CEADC8582F5E8F29000F74EA /* images in Resources */,
+				CEADC85A2F5E8F29000F74EA /* manifest.json in Resources */,
+				CEADC8562F5E8F29000F74EA /* _locales in Resources */,
+				CEADC85E2F5E8F29000F74EA /* content.js in Resources */,
+				CEADC8642F5E8F29000F74EA /* popup.js in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		CEADC8102F5E8F26000F74EA /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CEADC8272F5E8F26000F74EA /* ViewController.m in Sources */,
+				CEADC8192F5E8F26000F74EA /* AppDelegate.m in Sources */,
+				CEADC8312F5E8F29000F74EA /* main.m in Sources */,
+				CEADC8242F5E8F26000F74EA /* SceneDelegate.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		CEADC8322F5E8F29000F74EA /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CEADC83B2F5E8F29000F74EA /* ClaudeLegacyTests.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		CEADC83C2F5E8F29000F74EA /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CEADC8472F5E8F29000F74EA /* ClaudeLegacyUITestsLaunchTests.m in Sources */,
+				CEADC8452F5E8F29000F74EA /* ClaudeLegacyUITests.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		CEADC8482F5E8F29000F74EA /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CEADC8532F5E8F29000F74EA /* SafariWebExtensionHandler.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		CEADC8382F5E8F29000F74EA /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = CEADC8132F5E8F26000F74EA /* ClaudeLegacy */;
+			targetProxy = CEADC8372F5E8F29000F74EA /* PBXContainerItemProxy */;
+		};
+		CEADC8422F5E8F29000F74EA /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = CEADC8132F5E8F26000F74EA /* ClaudeLegacy */;
+			targetProxy = CEADC8412F5E8F29000F74EA /* PBXContainerItemProxy */;
+		};
+		CEADC84F2F5E8F29000F74EA /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = CEADC84B2F5E8F29000F74EA /* ClaudeLegacy Extension */;
+			targetProxy = CEADC84E2F5E8F29000F74EA /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		CEADC81B2F5E8F26000F74EA /* Main.html */ = {
+			isa = PBXVariantGroup;
+			children = (
+				CEADC81C2F5E8F26000F74EA /* Base */,
+			);
+			name = Main.html;
+			sourceTree = "<group>";
+		};
+		CEADC8282F5E8F26000F74EA /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				CEADC8292F5E8F26000F74EA /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+		CEADC82B2F5E8F26000F74EA /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				CEADC82C2F5E8F26000F74EA /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		CEADC8672F5E8F29000F74EA /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+			};
+			name = Debug;
+		};
+		CEADC8682F5E8F29000F74EA /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		CEADC86A2F5E8F29000F74EA /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "ClaudeLegacy Extension/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "ClaudeLegacy Extension";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				OTHER_LDFLAGS = (
+					"-framework",
+					SafariServices,
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = mgefimov.ClaudeLegacy.Extension;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		CEADC86B2F5E8F29000F74EA /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "ClaudeLegacy Extension/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "ClaudeLegacy Extension";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				OTHER_LDFLAGS = (
+					"-framework",
+					SafariServices,
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = mgefimov.ClaudeLegacy.Extension;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		CEADC86E2F5E8F29000F74EA /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = ClaudeLegacy/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Claude;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
+				INFOPLIST_KEY_UIMainStoryboardFile = Main;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				OTHER_LDFLAGS = (
+					"-framework",
+					SafariServices,
+					"-framework",
+					WebKit,
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = mgefimov.ClaudeLegacy;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		CEADC86F2F5E8F29000F74EA /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = ClaudeLegacy/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Claude;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
+				INFOPLIST_KEY_UIMainStoryboardFile = Main;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				OTHER_LDFLAGS = (
+					"-framework",
+					SafariServices,
+					"-framework",
+					WebKit,
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = mgefimov.ClaudeLegacy;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		CEADC8712F5E8F29000F74EA /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = mgefimov.ClaudeLegacyTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ClaudeLegacy.app/ClaudeLegacy";
+			};
+			name = Debug;
+		};
+		CEADC8722F5E8F29000F74EA /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = mgefimov.ClaudeLegacyTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ClaudeLegacy.app/ClaudeLegacy";
+			};
+			name = Release;
+		};
+		CEADC8742F5E8F29000F74EA /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = mgefimov.ClaudeLegacyUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = ClaudeLegacy;
+			};
+			name = Debug;
+		};
+		CEADC8752F5E8F29000F74EA /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = mgefimov.ClaudeLegacyUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = ClaudeLegacy;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		CEADC80F2F5E8F26000F74EA /* Build configuration list for PBXProject "ClaudeLegacy" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				CEADC8672F5E8F29000F74EA /* Debug */,
+				CEADC8682F5E8F29000F74EA /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		CEADC8692F5E8F29000F74EA /* Build configuration list for PBXNativeTarget "ClaudeLegacy Extension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				CEADC86A2F5E8F29000F74EA /* Debug */,
+				CEADC86B2F5E8F29000F74EA /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		CEADC86D2F5E8F29000F74EA /* Build configuration list for PBXNativeTarget "ClaudeLegacy" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				CEADC86E2F5E8F29000F74EA /* Debug */,
+				CEADC86F2F5E8F29000F74EA /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		CEADC8702F5E8F29000F74EA /* Build configuration list for PBXNativeTarget "ClaudeLegacyTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				CEADC8712F5E8F29000F74EA /* Debug */,
+				CEADC8722F5E8F29000F74EA /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		CEADC8732F5E8F29000F74EA /* Build configuration list for PBXNativeTarget "ClaudeLegacyUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				CEADC8742F5E8F29000F74EA /* Debug */,
+				CEADC8752F5E8F29000F74EA /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = CEADC80C2F5E8F26000F74EA /* Project object */;
+}
