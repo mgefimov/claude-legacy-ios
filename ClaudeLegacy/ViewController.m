@@ -6,6 +6,7 @@
 //
 
 #import "ViewController.h"
+#import "PolyfillsLoader.h"
 
 #import <WebKit/WebKit.h>
 
@@ -49,6 +50,7 @@
     [_webView.configuration.userContentController addScriptMessageHandler:self name:@"controller"];
 
     [self injectPatch];
+    [PolyfillsLoader injectPolyfillsIntoController:_webView.configuration.userContentController];
 
     [_webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:@"https://claude.ai"]]];
 }

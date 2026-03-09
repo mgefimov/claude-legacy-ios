@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		CE123A592F5EDE2C008A1A3A /* Polyfills in Resources */ = {isa = PBXBuildFile; fileRef = CE123A582F5EDE2C008A1A3A /* Polyfills */; };
+		CE123A5C2F5EDE2D008A1A3A /* PolyfillsLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = CE123A5B2F5EDE2D008A1A3A /* PolyfillsLoader.m */; };
 		CEADC8192F5E8F26000F74EA /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CEADC8182F5E8F26000F74EA /* AppDelegate.m */; };
 		CEADC81D2F5E8F26000F74EA /* Main.html in Resources */ = {isa = PBXBuildFile; fileRef = CEADC81B2F5E8F26000F74EA /* Main.html */; };
 		CEADC81F2F5E8F26000F74EA /* Icon.png in Resources */ = {isa = PBXBuildFile; fileRef = CEADC81E2F5E8F26000F74EA /* Icon.png */; };
@@ -71,6 +73,9 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		CE123A582F5EDE2C008A1A3A /* Polyfills */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Polyfills; path = "Polyfills/layout/Library/Application Support/Polyfills"; sourceTree = "<group>"; };
+		CE123A5A2F5EDE2D008A1A3A /* PolyfillsLoader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PolyfillsLoader.h; sourceTree = "<group>"; };
+		CE123A5B2F5EDE2D008A1A3A /* PolyfillsLoader.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PolyfillsLoader.m; sourceTree = "<group>"; };
 		CEADC8142F5E8F26000F74EA /* ClaudeLegacy.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ClaudeLegacy.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CEADC8172F5E8F26000F74EA /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		CEADC8182F5E8F26000F74EA /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -140,6 +145,7 @@
 		CEADC80B2F5E8F26000F74EA = {
 			isa = PBXGroup;
 			children = (
+				CE123A582F5EDE2C008A1A3A /* Polyfills */,
 				CEADC8162F5E8F26000F74EA /* ClaudeLegacy */,
 				CEADC8392F5E8F29000F74EA /* ClaudeLegacyTests */,
 				CEADC8432F5E8F29000F74EA /* ClaudeLegacyUITests */,
@@ -164,6 +170,8 @@
 			children = (
 				CEADC8172F5E8F26000F74EA /* AppDelegate.h */,
 				CEADC8182F5E8F26000F74EA /* AppDelegate.m */,
+				CE123A5A2F5EDE2D008A1A3A /* PolyfillsLoader.h */,
+				CE123A5B2F5EDE2D008A1A3A /* PolyfillsLoader.m */,
 				CEADC8222F5E8F26000F74EA /* SceneDelegate.h */,
 				CEADC8232F5E8F26000F74EA /* SceneDelegate.m */,
 				CEADC8252F5E8F26000F74EA /* ViewController.h */,
@@ -357,6 +365,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CE123A592F5EDE2C008A1A3A /* Polyfills in Resources */,
 				CEADC81F2F5E8F26000F74EA /* Icon.png in Resources */,
 				CEADC82D2F5E8F26000F74EA /* Main.storyboard in Resources */,
 				CEADC82A2F5E8F26000F74EA /* LaunchScreen.storyboard in Resources */,
@@ -403,6 +412,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				CEADC8272F5E8F26000F74EA /* ViewController.m in Sources */,
+				CE123A5C2F5EDE2D008A1A3A /* PolyfillsLoader.m in Sources */,
 				CEADC8192F5E8F26000F74EA /* AppDelegate.m in Sources */,
 				CEADC8312F5E8F29000F74EA /* main.m in Sources */,
 				CEADC8242F5E8F26000F74EA /* SceneDelegate.m in Sources */,
