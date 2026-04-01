@@ -7482,14 +7482,36 @@ var LegacyTranspiler = (() => {
     }
     return "".concat(BASE_URL, "/").concat(source.replace(/^\.\//, ""));
   };
+  var CACHE_NAME = "transpiled-v1";
+  async function openCache() {
+    if (typeof caches === "undefined") return null;
+    try {
+      return await caches.open(CACHE_NAME);
+    } catch {
+      return null;
+    }
+  }
   async function loadCode(src = "") {
     if (src.includes("intercom") || loaded.has(src)) {
       return;
     }
     loaded.add(src);
+    const cache = await openCache();
+    if (cache) {
+      const cached = await cache.match(src);
+      if (cached) {
+        console.log("[cache hit]", src);
+        options.runScript(await cached.text(), src);
+        return;
+      }
+    }
+    console.warn("[cache miss]", src);
     const r = await fetch(src);
     const code = await r.text();
     const patchedScript = transpile(src, code);
+    if (cache) {
+      cache.put(src, new Response(patchedScript));
+    }
     options.runScript(patchedScript, src);
   }
   function init(o) {
