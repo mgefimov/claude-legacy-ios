@@ -32,7 +32,7 @@
 		CEADC8622F5E8F29000F74EA /* popup.css in Resources */ = {isa = PBXBuildFile; fileRef = CEADC8612F5E8F29000F74EA /* popup.css */; };
 		CEADC8642F5E8F29000F74EA /* popup.js in Resources */ = {isa = PBXBuildFile; fileRef = CEADC8632F5E8F29000F74EA /* popup.js */; };
 		CEADC8662F5E8F29000F74EA /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CEADC82E2F5E8F29000F74EA /* Assets.xcassets */; };
-		E93430F52F7A83C800898D9B /* legacy-transpiler.js in Resources */ = {isa = PBXBuildFile; fileRef = E93430F42F7A83C800898D9B /* legacy-transpiler.js */; };
+		E99C77BC2F7D623000773982 /* legacy-transpiler.js in Resources */ = {isa = PBXBuildFile; fileRef = E99C77BB2F7D623000773982 /* legacy-transpiler.js */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -109,7 +109,7 @@
 		CEADC8612F5E8F29000F74EA /* popup.css */ = {isa = PBXFileReference; lastKnownFileType = text.css; path = popup.css; sourceTree = "<group>"; };
 		CEADC8632F5E8F29000F74EA /* popup.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = popup.js; sourceTree = "<group>"; };
 		CEADC8652F5E8F29000F74EA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		E93430F42F7A83C800898D9B /* legacy-transpiler.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = "legacy-transpiler.js"; sourceTree = "<group>"; };
+		E99C77BB2F7D623000773982 /* legacy-transpiler.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = "legacy-transpiler.js"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -183,7 +183,7 @@
 				CEADC82E2F5E8F29000F74EA /* Assets.xcassets */,
 				CEADC82F2F5E8F29000F74EA /* Info.plist */,
 				CEADC8302F5E8F29000F74EA /* main.m */,
-				E93430F42F7A83C800898D9B /* legacy-transpiler.js */,
+				E99C77BB2F7D623000773982 /* legacy-transpiler.js */,
 				CEADC81A2F5E8F26000F74EA /* Resources */,
 			);
 			path = ClaudeLegacy;
@@ -373,7 +373,7 @@
 				CEADC82D2F5E8F26000F74EA /* Main.storyboard in Resources */,
 				CEADC82A2F5E8F26000F74EA /* LaunchScreen.storyboard in Resources */,
 				CEADC81D2F5E8F26000F74EA /* Main.html in Resources */,
-				E93430F52F7A83C800898D9B /* legacy-transpiler.js in Resources */,
+				E99C77BC2F7D623000773982 /* legacy-transpiler.js in Resources */,
 				CEADC8662F5E8F29000F74EA /* Assets.xcassets in Resources */,
 				CEADC8212F5E8F26000F74EA /* Style.css in Resources */,
 			);
