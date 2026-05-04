@@ -5,5 +5,6 @@
 @interface PolyfillsLoader : NSObject
 
 + (void)injectPolyfillsIntoController:(WKUserContentController *)controller;
++ (BOOL)isIOSVersionOrNewer:(NSInteger)major minor:(NSInteger)minor;
 
 @end

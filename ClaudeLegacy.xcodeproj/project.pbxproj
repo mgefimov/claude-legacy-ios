@@ -33,6 +33,7 @@
 		CEADC8622F5E8F29000F74EA /* popup.css in Resources */ = {isa = PBXBuildFile; fileRef = CEADC8612F5E8F29000F74EA /* popup.css */; };
 		CEADC8642F5E8F29000F74EA /* popup.js in Resources */ = {isa = PBXBuildFile; fileRef = CEADC8632F5E8F29000F74EA /* popup.js */; };
 		CEADC8662F5E8F29000F74EA /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CEADC82E2F5E8F29000F74EA /* Assets.xcassets */; };
+		CEFE628B2FA85C95003461AC /* inert.min.js in Resources */ = {isa = PBXBuildFile; fileRef = CEFE628A2FA85C95003461AC /* inert.min.js */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -110,6 +111,7 @@
 		CEADC8612F5E8F29000F74EA /* popup.css */ = {isa = PBXFileReference; lastKnownFileType = text.css; path = popup.css; sourceTree = "<group>"; };
 		CEADC8632F5E8F29000F74EA /* popup.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = popup.js; sourceTree = "<group>"; };
 		CEADC8652F5E8F29000F74EA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		CEFE628A2FA85C95003461AC /* inert.min.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = inert.min.js; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -183,6 +185,7 @@
 				CEADC82E2F5E8F29000F74EA /* Assets.xcassets */,
 				CEADC82F2F5E8F29000F74EA /* Info.plist */,
 				CE7A75952FA6190100D473F0 /* legacy-transpiler.js */,
+				CEFE628A2FA85C95003461AC /* inert.min.js */,
 				CEADC8302F5E8F29000F74EA /* main.m */,
 				CEADC81A2F5E8F26000F74EA /* Resources */,
 			);
@@ -368,6 +371,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CEFE628B2FA85C95003461AC /* inert.min.js in Resources */,
 				CE123A592F5EDE2C008A1A3A /* Polyfills in Resources */,
 				CEADC81F2F5E8F26000F74EA /* Icon.png in Resources */,
 				CEADC82D2F5E8F26000F74EA /* Main.storyboard in Resources */,
@@ -670,7 +674,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 4;
 				DEVELOPMENT_TEAM = R743P2D925;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = ClaudeLegacy/Info.plist;
@@ -685,7 +689,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.3;
+				MARKETING_VERSION = 1.0.4;
 				OTHER_LDFLAGS = (
 					"-framework",
 					SafariServices,
@@ -705,7 +709,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 4;
 				DEVELOPMENT_TEAM = R743P2D925;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = ClaudeLegacy/Info.plist;
@@ -720,7 +724,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.3;
+				MARKETING_VERSION = 1.0.4;
 				OTHER_LDFLAGS = (
 					"-framework",
 					SafariServices,

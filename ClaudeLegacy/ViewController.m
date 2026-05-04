@@ -55,6 +55,19 @@
     }
 }
 
+- (void) injectInertPolyfill {
+    if ([PolyfillsLoader isIOSVersionOrNewer:15 minor:0]) {
+        return;
+    }
+    NSURL *scriptURL = [NSBundle.mainBundle URLForResource:@"inert.min" withExtension:@"js"];
+    
+    NSString *js = [NSString stringWithContentsOfURL:scriptURL encoding:NSUTF8StringEncoding error:nil];
+    if (js) {
+        WKUserScript *userScript = [[WKUserScript alloc] initWithSource:js injectionTime:WKUserScriptInjectionTimeAtDocumentStart forMainFrameOnly:YES];
+        [_webView.configuration.userContentController addUserScript:userScript];
+    }
+}
+
 - (void)injectCustomCSS {
     NSString *css = @"button[data-testid='login-with-google'] { display: none !important; }"
     "button[data-testid='login-with-google'] + p { display: none !important; }";
@@ -100,6 +113,7 @@
     [self injectIOSVersion];
     [self injectCustomCSS];
     [self injectTranspiler];
+    [self injectInertPolyfill];
     [self injectPatch];
     [PolyfillsLoader injectPolyfillsIntoController:_webView.configuration.userContentController];
     
