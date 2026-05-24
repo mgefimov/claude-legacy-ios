@@ -1,7 +1,7 @@
 (function () {
   const BASE_URL =
     "https://assets-proxy.anthropic.com/claude-ai/v2/assets/v1";
-  //  const BASE_URL = "http://192.168.1.136:3000/import";
+//  const BASE_URL = window.location.href
 
   window.LegacyTranspiler.init({
     BASE_URL,

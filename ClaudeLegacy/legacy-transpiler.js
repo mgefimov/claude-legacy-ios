@@ -7073,6 +7073,79 @@ var LegacyTranspiler = (() => {
     });
   }
 
+  // src/utils/patchAnimate.ts
+  function sanitizeOptions(options2) {
+    if (typeof options2 !== "object" || options2 === null) return options2;
+    const copy = { ...options2 };
+    if (typeof copy.easing === "string") copy.easing = "linear";
+    delete copy.composite;
+    delete copy.pseudoElement;
+    delete copy.iterationComposite;
+    return copy;
+  }
+  function noopAnimation() {
+    const noop = function() {
+    };
+    let resolveFinished = () => {
+    };
+    const finished = new Promise((resolve) => {
+      resolveFinished = resolve;
+    });
+    const animation = {
+      finished,
+      ready: finished,
+      playState: "finished",
+      currentTime: 0,
+      startTime: 0,
+      playbackRate: 1,
+      pending: false,
+      replaceState: "active",
+      timeline: null,
+      effect: null,
+      id: "",
+      onfinish: null,
+      oncancel: null,
+      onremove: null,
+      play: noop,
+      pause: noop,
+      finish: noop,
+      cancel: noop,
+      reverse: noop,
+      persist: noop,
+      commitStyles: noop,
+      updatePlaybackRate: noop,
+      addEventListener: noop,
+      removeEventListener: noop,
+      dispatchEvent: function() {
+        return false;
+      },
+      overallProgress: null
+    };
+    resolveFinished(animation);
+    return animation;
+  }
+  function patchAnimate() {
+    if (typeof window === "undefined" || typeof Element === "undefined") return;
+    const proto = Element.prototype;
+    const native = proto.animate;
+    if (typeof native !== "function") return;
+    Object.defineProperty(proto, "animate", {
+      configurable: true,
+      writable: true,
+      value: function(keyframes, options2) {
+        try {
+          return native.call(this, keyframes, options2);
+        } catch {
+          try {
+            return native.call(this, keyframes, sanitizeOptions(options2));
+          } catch {
+            return noopAnimation();
+          }
+        }
+      }
+    });
+  }
+
   // src/transforms/moduleExportsAccess.ts
   function moduleExportsAccess(source, start, end) {
     return {
@@ -7479,7 +7552,9 @@ var LegacyTranspiler = (() => {
       type: "MemberExpression",
       object,
       property: field.key,
-      computed: field.computed,
+      // A non-identifier key (numeric/string literal) needs computed access:
+      // `C[0]`, not the invalid `C.0`.
+      computed: field.computed || field.key.type !== "Identifier",
       optional: false,
       start: 0,
       end: 0
@@ -7537,6 +7612,207 @@ var LegacyTranspiler = (() => {
     };
   }
 
+  // src/transforms/transformInstanceClassField.ts
+  function extractInstanceFields(classNode) {
+    const fields = [];
+    classNode.body.body = classNode.body.body.filter((member) => {
+      if (member.type === "PropertyDefinition" && !member.static && member.key.type !== "PrivateIdentifier") {
+        fields.push({ key: member.key, value: member.value, computed: member.computed });
+        return false;
+      }
+      return true;
+    });
+    return fields;
+  }
+  function makeAssignment2(field) {
+    var _a;
+    const left = {
+      type: "MemberExpression",
+      object: { type: "ThisExpression", start: 0, end: 0 },
+      property: field.key,
+      // A non-identifier key (numeric/string literal) needs computed access:
+      // `this[0]`, not the invalid `this.0`.
+      computed: field.computed || field.key.type !== "Identifier",
+      optional: false,
+      start: 0,
+      end: 0
+    };
+    const fallback = { type: "Identifier", name: "undefined", start: 0, end: 0 };
+    return {
+      type: "AssignmentExpression",
+      operator: "=",
+      left,
+      right: (_a = field.value) != null ? _a : fallback,
+      start: 0,
+      end: 0
+    };
+  }
+  function toStatement(expression) {
+    return { type: "ExpressionStatement", expression, start: 0, end: 0 };
+  }
+  function findConstructor(classNode) {
+    for (const member of classNode.body.body) {
+      if (member.type === "MethodDefinition" && member.kind === "constructor") {
+        return member;
+      }
+    }
+    return null;
+  }
+  function isSuperCall(expr) {
+    return expr.type === "CallExpression" && expr.callee.type === "Super";
+  }
+  function insertAfterSuper(ctorBody, inits) {
+    const stmtIndex = ctorBody.findIndex(
+      (stmt) => stmt.type === "ExpressionStatement" && isSuperCall(stmt.expression)
+    );
+    if (stmtIndex !== -1) {
+      ctorBody.splice(stmtIndex + 1, 0, ...inits.map(toStatement));
+      return;
+    }
+    for (const stmt of ctorBody) {
+      if (stmt.type === "ExpressionStatement" && stmt.expression.type === "SequenceExpression") {
+        const seq = stmt.expression.expressions;
+        const seqIndex = seq.findIndex(isSuperCall);
+        if (seqIndex !== -1) {
+          seq.splice(seqIndex + 1, 0, ...inits);
+          return;
+        }
+      }
+    }
+    ctorBody.push(...inits.map(toStatement));
+  }
+  function makeConstructor(inits, derived) {
+    const body = [];
+    const params = [];
+    if (derived) {
+      const args = { type: "Identifier", name: "args", start: 0, end: 0 };
+      params.push({ type: "RestElement", argument: args, start: 0, end: 0 });
+      const superCall = {
+        type: "CallExpression",
+        callee: { type: "Super", start: 0, end: 0 },
+        arguments: [{ type: "SpreadElement", argument: args, start: 0, end: 0 }],
+        optional: false,
+        start: 0,
+        end: 0
+      };
+      body.push(toStatement(superCall));
+    }
+    body.push(...inits.map(toStatement));
+    return {
+      type: "MethodDefinition",
+      key: { type: "Identifier", name: "constructor", start: 0, end: 0 },
+      value: {
+        type: "FunctionExpression",
+        id: null,
+        params,
+        body: { type: "BlockStatement", body, start: 0, end: 0 },
+        generator: false,
+        expression: false,
+        async: false,
+        start: 0,
+        end: 0
+      },
+      kind: "constructor",
+      computed: false,
+      static: false,
+      start: 0,
+      end: 0
+    };
+  }
+  function processClass(classNode) {
+    const fields = extractInstanceFields(classNode);
+    if (fields.length === 0) return;
+    const inits = fields.map(makeAssignment2);
+    const derived = classNode.superClass != null;
+    const ctor = findConstructor(classNode);
+    if (!ctor) {
+      classNode.body.body.unshift(makeConstructor(inits, derived));
+      return;
+    }
+    const ctorBody = ctor.value.body.body;
+    if (derived) {
+      insertAfterSuper(ctorBody, inits);
+    } else {
+      ctorBody.unshift(...inits.map(toStatement));
+    }
+  }
+  function createInstanceClassFieldsVisitor() {
+    return {
+      ClassDeclaration(node) {
+        processClass(node);
+      },
+      ClassExpression(node) {
+        processClass(node);
+      }
+    };
+  }
+
+  // src/transforms/transformLogicalAssignment.ts
+  function makeAssignment3(target, value) {
+    return {
+      type: "AssignmentExpression",
+      operator: "=",
+      left: target,
+      right: value,
+      start: target.start,
+      end: value.end
+    };
+  }
+  function makeNullLiteral() {
+    return { type: "Literal", value: null, raw: "null", start: 0, end: 0 };
+  }
+  function createLogicalAssignmentVisitor() {
+    return {
+      AssignmentExpression(node) {
+        const op = node.operator;
+        if (op !== "||=" && op !== "&&=" && op !== "??=") return;
+        const target = node.left;
+        if (target.type !== "Identifier" && target.type !== "MemberExpression") return;
+        if (op === "??=") {
+          const conditional = {
+            type: "ConditionalExpression",
+            test: {
+              type: "BinaryExpression",
+              operator: "==",
+              left: target,
+              right: makeNullLiteral(),
+              start: node.start,
+              end: node.end
+            },
+            consequent: makeAssignment3(target, node.right),
+            alternate: target,
+            start: node.start,
+            end: node.end
+          };
+          Object.assign(node, conditional);
+          return;
+        }
+        const logical = {
+          type: "LogicalExpression",
+          operator: op === "||=" ? "||" : "&&",
+          left: target,
+          right: makeAssignment3(target, node.right),
+          start: node.start,
+          end: node.end
+        };
+        Object.assign(node, logical);
+      }
+    };
+  }
+
+  // src/transforms/transformBigInt.ts
+  function createBigIntVisitor() {
+    return {
+      Literal(node) {
+        var _a;
+        if (node.bigint == null) return;
+        const raw = (_a = node.raw) != null ? _a : "".concat(node.bigint, "n");
+        node.raw = raw.replace(/n$/, "");
+        node.bigint = void 0;
+      }
+    };
+  }
+
   // src/transforms/transformPrivateFields.ts
   var PREFIX = "_private_field__";
   function renamePrivate(node) {
@@ -7547,7 +7823,7 @@ var LegacyTranspiler = (() => {
       end: node.end
     };
   }
-  function processClass(classNode) {
+  function processClass2(classNode) {
     for (const member of classNode.body.body) {
       if (member.type === "PropertyDefinition" && member.key.type === "PrivateIdentifier") {
         member.key = renamePrivate(member.key);
@@ -7561,10 +7837,10 @@ var LegacyTranspiler = (() => {
   function createPrivateFieldsVisitor() {
     return {
       ClassDeclaration(node) {
-        processClass(node);
+        processClass2(node);
       },
       ClassExpression(node) {
-        processClass(node);
+        processClass2(node);
       },
       MemberExpression(node) {
         if (node.property.type === "PrivateIdentifier") {
@@ -7635,6 +7911,9 @@ var LegacyTranspiler = (() => {
     return merged;
   }
 
+  // package.json
+  var version2 = "0.1.7";
+
   // src/index.ts
   var options;
   function targetAtLeast(platform, min) {
@@ -7650,7 +7929,10 @@ var LegacyTranspiler = (() => {
   var _moduleExports = {};
   var _importWaitlist = {};
   var loaded = /* @__PURE__ */ new Set();
-  if (typeof window !== "undefined") patchFetch();
+  if (typeof window !== "undefined") {
+    patchFetch();
+    patchAnimate();
+  }
   var resolveModule = (source = "") => {
     const BASE_URL = options.BASE_URL;
     if (!source.startsWith("./")) {
@@ -7658,7 +7940,7 @@ var LegacyTranspiler = (() => {
     }
     return "".concat(BASE_URL, "/").concat(source.replace(/^\.\//, ""));
   };
-  var CACHE_NAME = "transpiled-v5";
+  var CACHE_NAME = "transpiled-v".concat(version2);
   async function openCache() {
     if (typeof caches === "undefined") return null;
     try {
@@ -7737,6 +8019,15 @@ var LegacyTranspiler = (() => {
     visitors.push(createStaticBlocksVisitor());
     if (!targetAtLeast("iOS", [15, 0])) {
       visitors.push(createStaticClassFieldsVisitor());
+    }
+    if (!targetAtLeast("iOS", [14, 0])) {
+      visitors.push(createInstanceClassFieldsVisitor());
+    }
+    if (!targetAtLeast("iOS", [14, 0])) {
+      visitors.push(createLogicalAssignmentVisitor());
+    }
+    if (!targetAtLeast("iOS", [14, 0])) {
+      visitors.push(createBigIntVisitor());
     }
     simple(ast, mergeVisitors(...visitors));
     transformExports(ast, { src });

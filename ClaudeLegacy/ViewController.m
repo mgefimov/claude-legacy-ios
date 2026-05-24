@@ -54,6 +54,34 @@
     }
 }
 
+- (void) injectMatchMedia {
+    if ([PolyfillsLoader isIOSVersionOrNewer:14 minor:0]) {
+        return;
+    }
+    NSURL *scriptURL = [NSBundle.mainBundle URLForResource:@"matchMedia" withExtension:@"js"];
+    
+    NSString *js = [NSString stringWithContentsOfURL:scriptURL encoding:NSUTF8StringEncoding error:nil];
+
+    if (js) {
+        WKUserScript *userScript = [[WKUserScript alloc] initWithSource:js injectionTime:WKUserScriptInjectionTimeAtDocumentStart forMainFrameOnly:YES];
+        [_webView.configuration.userContentController addUserScript:userScript];
+    }
+}
+
+- (void) injectMatchMediaAddEventListener {
+    if ([PolyfillsLoader isIOSVersionOrNewer:14 minor:0]) {
+        return;
+    }
+    NSURL *scriptURL = [NSBundle.mainBundle URLForResource:@"MediaQueryList.addEventListener" withExtension:@"js"];
+    
+    NSString *js = [NSString stringWithContentsOfURL:scriptURL encoding:NSUTF8StringEncoding error:nil];
+
+    if (js) {
+        WKUserScript *userScript = [[WKUserScript alloc] initWithSource:js injectionTime:WKUserScriptInjectionTimeAtDocumentStart forMainFrameOnly:YES];
+        [_webView.configuration.userContentController addUserScript:userScript];
+    }
+}
+
 - (void)injectCustomCSS {
     NSString *css = @"button[data-testid='login-with-google'] { display: none !important; }"
     "button[data-testid='login-with-google'] + p { display: none !important; }";
@@ -101,6 +129,7 @@
     [self injectTranspiler];
     [self injectPatch];
     [PolyfillsLoader injectPolyfillsIntoController:_webView.configuration.userContentController];
+    [self injectMatchMediaAddEventListener];
     
     [_webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:@"https://claude.ai"]]];
 //    [_webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:@"http://192.168.1.136:3000"]]];

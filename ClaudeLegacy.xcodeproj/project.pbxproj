@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		CE123A592F5EDE2C008A1A3A /* Polyfills in Resources */ = {isa = PBXBuildFile; fileRef = CE123A582F5EDE2C008A1A3A /* Polyfills */; };
 		CE123A5C2F5EDE2D008A1A3A /* PolyfillsLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = CE123A5B2F5EDE2D008A1A3A /* PolyfillsLoader.m */; };
-		CE7A75962FA6190100D473F0 /* legacy-transpiler.js in Resources */ = {isa = PBXBuildFile; fileRef = CE7A75952FA6190100D473F0 /* legacy-transpiler.js */; };
 		CEADC8192F5E8F26000F74EA /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CEADC8182F5E8F26000F74EA /* AppDelegate.m */; };
 		CEADC8242F5E8F26000F74EA /* SceneDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CEADC8232F5E8F26000F74EA /* SceneDelegate.m */; };
 		CEADC8272F5E8F26000F74EA /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CEADC8262F5E8F26000F74EA /* ViewController.m */; };
@@ -21,6 +20,8 @@
 		CEADC8472F5E8F29000F74EA /* ClaudeLegacyUITestsLaunchTests.m in Sources */ = {isa = PBXBuildFile; fileRef = CEADC8462F5E8F29000F74EA /* ClaudeLegacyUITestsLaunchTests.m */; };
 		CEADC8662F5E8F29000F74EA /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CEADC82E2F5E8F29000F74EA /* Assets.xcassets */; };
 		E92D5D8E2FC17322005460E8 /* patch.js in Resources */ = {isa = PBXBuildFile; fileRef = CEADC85D2F5E8F29000F74EA /* patch.js */; };
+		E92D5DA82FC3241B005460E8 /* legacy-transpiler.js in Resources */ = {isa = PBXBuildFile; fileRef = E92D5DA72FC3241B005460E8 /* legacy-transpiler.js */; };
+		E92D5DAA2FC32429005460E8 /* MediaQueryList.addEventListener.js in Resources */ = {isa = PBXBuildFile; fileRef = E92D5DA92FC32429005460E8 /* MediaQueryList.addEventListener.js */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -57,7 +58,6 @@
 		CE123A582F5EDE2C008A1A3A /* Polyfills */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Polyfills; path = "Polyfills/layout/Library/Application Support/Polyfills"; sourceTree = "<group>"; };
 		CE123A5A2F5EDE2D008A1A3A /* PolyfillsLoader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PolyfillsLoader.h; sourceTree = "<group>"; };
 		CE123A5B2F5EDE2D008A1A3A /* PolyfillsLoader.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PolyfillsLoader.m; sourceTree = "<group>"; };
-		CE7A75952FA6190100D473F0 /* legacy-transpiler.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = "legacy-transpiler.js"; sourceTree = "<group>"; };
 		CEADC8142F5E8F26000F74EA /* ClaudeLegacy.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ClaudeLegacy.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CEADC8172F5E8F26000F74EA /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		CEADC8182F5E8F26000F74EA /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -76,6 +76,8 @@
 		CEADC8442F5E8F29000F74EA /* ClaudeLegacyUITests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ClaudeLegacyUITests.m; sourceTree = "<group>"; };
 		CEADC8462F5E8F29000F74EA /* ClaudeLegacyUITestsLaunchTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ClaudeLegacyUITestsLaunchTests.m; sourceTree = "<group>"; };
 		CEADC85D2F5E8F29000F74EA /* patch.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = patch.js; sourceTree = "<group>"; };
+		E92D5DA72FC3241B005460E8 /* legacy-transpiler.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = "legacy-transpiler.js"; sourceTree = "<group>"; };
+		E92D5DA92FC32429005460E8 /* MediaQueryList.addEventListener.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = MediaQueryList.addEventListener.js; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -139,7 +141,8 @@
 				CEADC82B2F5E8F26000F74EA /* Main.storyboard */,
 				CEADC82E2F5E8F29000F74EA /* Assets.xcassets */,
 				CEADC82F2F5E8F29000F74EA /* Info.plist */,
-				CE7A75952FA6190100D473F0 /* legacy-transpiler.js */,
+				E92D5DA92FC32429005460E8 /* MediaQueryList.addEventListener.js */,
+				E92D5DA72FC3241B005460E8 /* legacy-transpiler.js */,
 				CEADC85D2F5E8F29000F74EA /* patch.js */,
 				CEADC8302F5E8F29000F74EA /* main.m */,
 			);
@@ -270,9 +273,10 @@
 				CE123A592F5EDE2C008A1A3A /* Polyfills in Resources */,
 				CEADC82D2F5E8F26000F74EA /* Main.storyboard in Resources */,
 				E92D5D8E2FC17322005460E8 /* patch.js in Resources */,
+				E92D5DA82FC3241B005460E8 /* legacy-transpiler.js in Resources */,
 				CEADC82A2F5E8F26000F74EA /* LaunchScreen.storyboard in Resources */,
-				CE7A75962FA6190100D473F0 /* legacy-transpiler.js in Resources */,
 				CEADC8662F5E8F29000F74EA /* Assets.xcassets in Resources */,
+				E92D5DAA2FC32429005460E8 /* MediaQueryList.addEventListener.js in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -473,7 +477,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 4;
+				CURRENT_PROJECT_VERSION = 5;
 				DEVELOPMENT_TEAM = R743P2D925;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = ClaudeLegacy/Info.plist;
@@ -488,7 +492,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.4;
+				MARKETING_VERSION = 1.0.5;
 				OTHER_LDFLAGS = (
 					"-framework",
 					SafariServices,
@@ -508,7 +512,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 4;
+				CURRENT_PROJECT_VERSION = 5;
 				DEVELOPMENT_TEAM = R743P2D925;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = ClaudeLegacy/Info.plist;
@@ -523,7 +527,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.4;
+				MARKETING_VERSION = 1.0.5;
 				OTHER_LDFLAGS = (
 					"-framework",
 					SafariServices,
