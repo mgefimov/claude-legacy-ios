@@ -17,10 +17,14 @@ NS_ASSUME_NONNULL_BEGIN
 /// Progress in 0...1. Never moves backwards.
 - (void)setProgress:(float)progress animated:(BOOL)animated;
 
-/// Replaces the progress UI with a message and a tappable button.
-- (void)showMessage:(NSString *)message buttonTitle:(NSString *)title handler:(void (^)(void))handler;
+/// Replaces the progress UI with an error, the raw failure text and two actions.
+/// `details` is meant for console-style output (JS exceptions, network errors).
+- (void)showErrorWithMessage:(NSString *)message
+                     details:(nullable NSString *)details
+                retryHandler:(void (^)(void))retryHandler
+             continueHandler:(void (^)(void))continueHandler;
 
-/// Puts the overlay back into the loading state after -showMessage:...
+/// Puts the overlay back into the loading state after -showErrorWithMessage:...
 - (void)resetToLoading;
 
 /// Fades out and removes itself from the view hierarchy.

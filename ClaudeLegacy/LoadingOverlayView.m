@@ -14,8 +14,11 @@
 @property (nonatomic, strong) UILabel *stageLabel;
 @property (nonatomic, strong) UILabel *detailLabel;
 @property (nonatomic, strong) UILabel *messageLabel;
-@property (nonatomic, strong) UIButton *actionButton;
-@property (nonatomic, copy, nullable) void (^actionHandler)(void);
+@property (nonatomic, strong) UILabel *errorDetailsLabel;
+@property (nonatomic, strong) UIButton *retryButton;
+@property (nonatomic, strong) UIButton *continueButton;
+@property (nonatomic, copy, nullable) void (^retryHandler)(void);
+@property (nonatomic, copy, nullable) void (^continueHandler)(void);
 
 @end
 
@@ -67,17 +70,33 @@
     _detailLabel.lineBreakMode = NSLineBreakByTruncatingMiddle;
 
     _messageLabel = [[UILabel alloc] init];
-    _messageLabel.font = [UIFont systemFontOfSize:13];
-    _messageLabel.textColor = UIColor.secondaryLabelColor;
+    _messageLabel.font = [UIFont systemFontOfSize:14];
+    _messageLabel.textColor = UIColor.labelColor;
     _messageLabel.textAlignment = NSTextAlignmentCenter;
     _messageLabel.numberOfLines = 0;
     _messageLabel.hidden = YES;
 
-    _actionButton = [UIButton buttonWithType:UIButtonTypeSystem];
-    _actionButton.titleLabel.font = [UIFont systemFontOfSize:15 weight:UIFontWeightMedium];
-    [_actionButton setTitleColor:accent forState:UIControlStateNormal];
-    [_actionButton addTarget:self action:@selector(handleAction) forControlEvents:UIControlEventTouchUpInside];
-    _actionButton.hidden = YES;
+    _errorDetailsLabel = [[UILabel alloc] init];
+    _errorDetailsLabel.font = [UIFont monospacedSystemFontOfSize:11 weight:UIFontWeightRegular];
+    _errorDetailsLabel.textColor = UIColor.secondaryLabelColor;
+    _errorDetailsLabel.textAlignment = NSTextAlignmentCenter;
+    _errorDetailsLabel.numberOfLines = 6;
+    _errorDetailsLabel.lineBreakMode = NSLineBreakByTruncatingTail;
+    _errorDetailsLabel.hidden = YES;
+
+    _retryButton = [UIButton buttonWithType:UIButtonTypeSystem];
+    _retryButton.titleLabel.font = [UIFont systemFontOfSize:15 weight:UIFontWeightSemibold];
+    [_retryButton setTitle:@"Reload" forState:UIControlStateNormal];
+    [_retryButton setTitleColor:accent forState:UIControlStateNormal];
+    [_retryButton addTarget:self action:@selector(handleRetry) forControlEvents:UIControlEventTouchUpInside];
+    _retryButton.hidden = YES;
+
+    _continueButton = [UIButton buttonWithType:UIButtonTypeSystem];
+    _continueButton.titleLabel.font = [UIFont systemFontOfSize:13];
+    [_continueButton setTitle:@"Continue anyway" forState:UIControlStateNormal];
+    [_continueButton setTitleColor:UIColor.secondaryLabelColor forState:UIControlStateNormal];
+    [_continueButton addTarget:self action:@selector(handleContinue) forControlEvents:UIControlEventTouchUpInside];
+    _continueButton.hidden = YES;
 
     _stack = [[UIStackView alloc] initWithArrangedSubviews:@[_iconView,
                                                              _titleLabel,
@@ -85,7 +104,9 @@
                                                              _stageLabel,
                                                              _detailLabel,
                                                              _messageLabel,
-                                                             _actionButton]];
+                                                             _errorDetailsLabel,
+                                                             _retryButton,
+                                                             _continueButton]];
     _stack.axis = UILayoutConstraintAxisVertical;
     _stack.alignment = UIStackViewAlignmentFill;
     _stack.spacing = 8;
@@ -93,18 +114,20 @@
     [_stack setCustomSpacing:20 afterView:_iconView];
     [_stack setCustomSpacing:20 afterView:_titleLabel];
     [_stack setCustomSpacing:14 afterView:_progressView];
-    [_stack setCustomSpacing:16 afterView:_messageLabel];
+    [_stack setCustomSpacing:10 afterView:_messageLabel];
+    [_stack setCustomSpacing:20 afterView:_errorDetailsLabel];
     [self addSubview:_stack];
 
+    // Beats the labels' compression resistance (750) so long text wraps inside
+    // the fixed width instead of stretching the stack and truncating.
     NSLayoutConstraint *width = [_stack.widthAnchor constraintEqualToConstant:280];
-    width.priority = UILayoutPriorityDefaultHigh;
+    width.priority = UILayoutPriorityRequired - 1;
 
     [NSLayoutConstraint activateConstraints:@[
         [_stack.centerXAnchor constraintEqualToAnchor:self.centerXAnchor],
         [_stack.centerYAnchor constraintEqualToAnchor:self.centerYAnchor constant:-20],
         width,
-        [_stack.leadingAnchor constraintGreaterThanOrEqualToAnchor:self.leadingAnchor constant:24],
-        [_stack.trailingAnchor constraintLessThanOrEqualToAnchor:self.trailingAnchor constant:-24],
+        [_stack.widthAnchor constraintLessThanOrEqualToAnchor:self.widthAnchor constant:-48],
     ]];
 }
 
@@ -121,29 +144,48 @@
     [_progressView setProgress:clamped animated:animated];
 }
 
-- (void)showMessage:(NSString *)message buttonTitle:(NSString *)title handler:(void (^)(void))handler {
-    self.actionHandler = handler;
+- (void)showErrorWithMessage:(NSString *)message
+                     details:(NSString *)details
+                retryHandler:(void (^)(void))retryHandler
+             continueHandler:(void (^)(void))continueHandler {
+    self.retryHandler = retryHandler;
+    self.continueHandler = continueHandler;
+
+    _titleLabel.text = @"Something went wrong";
     _messageLabel.text = message;
     _messageLabel.hidden = NO;
-    [_actionButton setTitle:title forState:UIControlStateNormal];
-    _actionButton.hidden = NO;
+    _errorDetailsLabel.text = details;
+    _errorDetailsLabel.hidden = (details.length == 0);
+    _retryButton.hidden = NO;
+    _continueButton.hidden = NO;
     _progressView.hidden = YES;
     _stageLabel.hidden = YES;
     _detailLabel.hidden = YES;
 }
 
 - (void)resetToLoading {
-    self.actionHandler = nil;
+    self.retryHandler = nil;
+    self.continueHandler = nil;
+    _titleLabel.text = @"Claude Legacy";
     _messageLabel.hidden = YES;
-    _actionButton.hidden = YES;
+    _errorDetailsLabel.hidden = YES;
+    _retryButton.hidden = YES;
+    _continueButton.hidden = YES;
     _progressView.hidden = NO;
     _stageLabel.hidden = NO;
     _detailLabel.hidden = NO;
     _progressView.progress = 0;
 }
 
-- (void)handleAction {
-    void (^handler)(void) = self.actionHandler;
+- (void)handleRetry {
+    void (^handler)(void) = self.retryHandler;
+    if (handler) {
+        handler();
+    }
+}
+
+- (void)handleContinue {
+    void (^handler)(void) = self.continueHandler;
     if (handler) {
         handler();
     }

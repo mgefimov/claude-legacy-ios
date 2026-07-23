@@ -34,6 +34,8 @@ static const NSTimeInterval kLoadingTimeout = 60.0;
 @property (nonatomic, assign) NSInteger pendingScripts;
 @property (nonatomic, assign) BOOL pageReady;
 @property (nonatomic, assign) BOOL navigationFinished;
+@property (nonatomic, copy, nullable) NSString *lastErrorMessage;
+@property (nonatomic, assign) NSInteger errorCount;
 
 @end
 
@@ -238,8 +240,13 @@ static const NSTimeInterval kLoadingTimeout = 60.0;
     }
 
     if ([[NSDate date] timeIntervalSinceDate:self.loadingStartedAt] > kLoadingTimeout) {
-        NSLog(@"[loading] timed out after %.0fs, dismissing overlay", kLoadingTimeout);
-        [self finishLoading];
+        NSLog(@"[loading] timed out after %.0fs", kLoadingTimeout);
+        if (self.pageReady) {
+            [self finishLoading];
+        } else {
+            [self showFailure:@"Claude is taking longer than expected to load."
+                      details:[self errorDetails]];
+        }
         return;
     }
 
@@ -255,9 +262,20 @@ static const NSTimeInterval kLoadingTimeout = 60.0;
         return;
     }
 
-    // No ready signal from the page: only bail out once the navigation itself
-    // finished and nothing has been transpiled for a while.
-    if (self.navigationFinished && idle >= kSettleWithoutReadySignal) {
+    // No ready signal from the page: wait until the navigation itself finished
+    // and nothing has been transpiled for a while, then decide whether the page
+    // simply had nothing to transpile or actually failed.
+    if (!self.navigationFinished || idle < kSettleWithoutReadySignal) {
+        return;
+    }
+
+    if (self.lastErrorMessage != nil) {
+        [self showFailure:@"Claude could not be started on this iOS version."
+                  details:[self errorDetails]];
+    } else if (self.modulesDone == 0) {
+        [self showFailure:@"The page loaded but no application code was executed."
+                  details:@"No script was intercepted by the transpiler."];
+    } else {
         [self finishLoading];
     }
 }
@@ -302,26 +320,63 @@ static const NSTimeInterval kLoadingTimeout = 60.0;
     return @"Compiling modules";
 }
 
-- (void)showLoadingError:(NSError *)error {
+/// Turns the overlay into an error screen. Keeps the overlay up on purpose: a
+/// failed load leaves a blank web view behind, which tells the user nothing.
+- (void)showFailure:(NSString *)message details:(NSString *)details {
     if (![self isLoadingOverlayVisible]) {
         return;
     }
+
+    NSLog(@"[loading] failed: %@ (%@)", message, details);
 
     [self.settleTimer invalidate];
     self.settleTimer = nil;
 
     __weak typeof(self) weakSelf = self;
-    NSString *message = [NSString stringWithFormat:@"Could not load claude.ai\n%@", error.localizedDescription];
-    [self.loadingOverlay showMessage:message buttonTitle:@"Retry" handler:^{
+    [self.loadingOverlay showErrorWithMessage:message details:details retryHandler:^{
         typeof(self) strongSelf = weakSelf;
         if (!strongSelf) {
             return;
         }
         [strongSelf.loadingOverlay resetToLoading];
         [strongSelf.loadingOverlay setStage:@"Connecting to claude.ai" detail:nil];
+        strongSelf.lastErrorMessage = nil;
         [strongSelf resetLoadingProgress];
         [strongSelf.webView reload];
+    } continueHandler:^{
+        typeof(self) strongSelf = weakSelf;
+        [strongSelf.loadingOverlay dismiss];
     }];
+}
+
+- (void)showFailureForError:(NSError *)error {
+    NSString *details = error.userInfo[@"WKJavaScriptExceptionMessage"] ?: error.localizedDescription;
+    [self showFailure:@"Could not load claude.ai." details:details];
+}
+
+/// Remembers the first failure seen while loading; -checkIfSettled decides
+/// whether it actually kept the page from starting.
+- (void)recordErrorMessage:(NSString *)message {
+    if (message.length == 0 || self.pageReady) {
+        return;
+    }
+    NSLog(@"[loading] error while loading: %@", message);
+    self.errorCount += 1;
+    if (self.lastErrorMessage == nil) {
+        self.lastErrorMessage = message;
+    }
+}
+
+/// First error plus how many followed it — the rest are usually the same cause.
+- (NSString *)errorDetails {
+    if (self.lastErrorMessage == nil) {
+        return nil;
+    }
+    if (self.errorCount > 1) {
+        return [NSString stringWithFormat:@"%@\n\n+ %ld more error(s)",
+                self.lastErrorMessage, (long)(self.errorCount - 1)];
+    }
+    return self.lastErrorMessage;
 }
 
 #pragma mark - KVO
@@ -369,15 +424,22 @@ static const NSTimeInterval kLoadingTimeout = 60.0;
 - (void)webView:(WKWebView *)webView didFailProvisionalNavigation:(WKNavigation *)navigation withError:(NSError *)error {
     [webView.scrollView.refreshControl endRefreshing];
     if (error.code != NSURLErrorCancelled) {
-        [self showLoadingError:error];
+        [self showFailureForError:error];
     }
 }
 
 - (void)webView:(WKWebView *)webView didFailNavigation:(WKNavigation *)navigation withError:(NSError *)error {
     [webView.scrollView.refreshControl endRefreshing];
     if (error.code != NSURLErrorCancelled) {
-        [self showLoadingError:error];
+        [self showFailureForError:error];
     }
+}
+
+- (void)webViewWebContentProcessDidTerminate:(WKWebView *)webView {
+    [webView.scrollView.refreshControl endRefreshing];
+    [self showLoadingOverlay];
+    [self showFailure:@"The web process stopped — the device may have run out of memory."
+              details:nil];
 }
 
 #pragma mark - WKScriptMessageHandler
@@ -424,6 +486,10 @@ static const NSTimeInterval kLoadingTimeout = 60.0;
         if (!strongSelf) {
             return;
         }
+        if (err) {
+            NSString *reason = err.userInfo[@"WKJavaScriptExceptionMessage"] ?: err.localizedDescription;
+            [strongSelf recordErrorMessage:[NSString stringWithFormat:@"%@: %@", file ?: @"module", reason]];
+        }
         [strongSelf noteActivity];
         strongSelf.modulesDone += 1;
         if ([strongSelf isLoadingOverlayVisible]) {
@@ -451,6 +517,13 @@ static const NSTimeInterval kLoadingTimeout = 60.0;
                               detail:file];
     } else if ([stage isEqualToString:@"ready"]) {
         self.pageReady = YES;
+    } else if ([stage isEqualToString:@"error"]) {
+        NSString *jsMessage = [body[@"message"] isKindOfClass:NSString.class] ? body[@"message"] : @"Unknown JavaScript error";
+        [self recordErrorMessage:jsMessage];
+        if ([body[@"fatal"] boolValue]) {
+            [self showFailure:@"Claude could not be started on this iOS version."
+                      details:jsMessage];
+        }
     }
 }
 

@@ -15,7 +15,37 @@
     return parts[parts.length - 1] || path;
   };
 
+  const reportError = (message, fatal) => {
+    status({ stage: "error", message: String(message), fatal: !!fatal });
+  };
+
   status({ stage: "boot" });
+
+  // Anything thrown while the page is still loading is worth showing: at that
+  // point a failure means a blank screen, not a glitch in an already-running app.
+  window.addEventListener("error", (event) => {
+    if (event && event.message) {
+      const where = event.filename
+        ? " (" + shortName(event.filename) + ":" + event.lineno + ")"
+        : "";
+      reportError(event.message + where, false);
+    }
+  });
+
+  window.addEventListener("unhandledrejection", (event) => {
+    const reason = event && event.reason;
+    if (reason) {
+      reportError((reason && reason.message) || reason, false);
+    }
+  });
+
+  if (!window.LegacyTranspiler || typeof window.LegacyTranspiler.init !== "function") {
+    reportError(
+      "legacy-transpiler.js did not load — check the Web Inspector console for a SyntaxError.",
+      true
+    );
+    return;
+  }
 
   // Report every module download so the loading screen can name the file it waits on.
   const originalFetch = window.fetch;
@@ -54,20 +84,25 @@
     readyTimer = setTimeout(checkReady, 800);
   };
 
-  window.LegacyTranspiler.init({
-    BASE_URL,
-    runScript: (code, src) => {
-      window.webkit.messageHandlers.patchScript.postMessage({
-        code: code,
-        file: shortName(src),
-      });
-      scheduleReadyCheck();
-    },
-    target: {
-      platform: 'iOS',
-      version: iosVersion
-    }
-  });
+  try {
+    window.LegacyTranspiler.init({
+      BASE_URL,
+      runScript: (code, src) => {
+        window.webkit.messageHandlers.patchScript.postMessage({
+          code: code,
+          file: shortName(src),
+        });
+        scheduleReadyCheck();
+      },
+      target: {
+        platform: 'iOS',
+        version: iosVersion
+      }
+    });
+  } catch (e) {
+    reportError("LegacyTranspiler.init failed: " + (e && e.message ? e.message : e), true);
+    return;
+  }
 
   const observer = new MutationObserver((mutations) => {
     for (const mutation of mutations) {
@@ -75,7 +110,16 @@
         if (node.tagName === "SCRIPT" && node.src && node.src.includes('index')) {
           node.type = "javascript/blocked";
           const src = node.src;
-          window.LegacyTranspiler.loadCode(src)
+          try {
+            window.LegacyTranspiler.loadCode(src)
+          } catch (e) {
+            // The entry chunk is blocked at this point, so failing here means
+            // nothing will ever render.
+            reportError(
+              "Failed to transpile " + shortName(src) + ": " + (e && e.message ? e.message : e),
+              true
+            );
+          }
         }
       }
     }
