@@ -7,12 +7,33 @@
 #import <objc/runtime.h>
 #import "ViewController.h"
 #import "PolyfillsLoader.h"
+#import "LoadingOverlayView.h"
 
 #import <WebKit/WebKit.h>
+
+/// Number of modules the previous successful launch had to transpile — used to
+/// turn the module counter into a real percentage on every launch but the first.
+static NSString *const kModuleCountKey = @"LastModuleCount";
+
+/// Seconds without any module activity before the page is assumed to be ready.
+static const NSTimeInterval kSettleAfterReadySignal = 0.3;
+static const NSTimeInterval kSettleWithoutReadySignal = 6.0;
+/// Hard stop: never keep the overlay up longer than this.
+static const NSTimeInterval kLoadingTimeout = 60.0;
 
 @interface ViewController () <WKNavigationDelegate, WKScriptMessageHandler>
 
 @property (nonatomic) IBOutlet WKWebView *webView;
+
+@property (nonatomic, strong) LoadingOverlayView *loadingOverlay;
+@property (nonatomic, strong) NSTimer *settleTimer;
+@property (nonatomic, strong) NSDate *lastActivity;
+@property (nonatomic, strong) NSDate *loadingStartedAt;
+@property (nonatomic, assign) NSInteger modulesDone;
+@property (nonatomic, assign) NSInteger modulesExpected;
+@property (nonatomic, assign) NSInteger pendingScripts;
+@property (nonatomic, assign) BOOL pageReady;
+@property (nonatomic, assign) BOOL navigationFinished;
 
 @end
 
@@ -106,31 +127,54 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
+
     self.view.backgroundColor = [UIColor colorWithDynamicProvider:^UIColor *(UITraitCollection *tc) {
         return tc.userInterfaceStyle == UIUserInterfaceStyleDark
         ? [UIColor colorWithRed:31/255.0 green:31/255.0 blue:30/255.0 alpha:1.0]   // #1f1f1e
         : [UIColor colorWithRed:0xF8/255.0 green:0xF7/255.0 blue:0xF3/255.0 alpha:1.0];  // #F8F7F3
     }];
-    
+
     UIRefreshControl *refreshControl = [[UIRefreshControl alloc] init];
     [refreshControl addTarget:self action:@selector(handleRefresh:) forControlEvents:UIControlEventValueChanged];
     _webView.scrollView.refreshControl = refreshControl;
-    
+
     _webView.opaque = NO;
     _webView.backgroundColor = UIColor.clearColor;
     _webView.navigationDelegate = self;
     _webView.scrollView.scrollEnabled = YES;
-    
+
     [self.webView.configuration.userContentController addScriptMessageHandler:self name:@"patchScript"];
-    
+    [self.webView.configuration.userContentController addScriptMessageHandler:self name:@"loadingStatus"];
+
+    [self.webView addObserver:self forKeyPath:@"estimatedProgress" options:0 context:NULL];
+
+    [self showLoadingOverlay];
+
+    // Injecting the polyfills reads a few hundred files off disk, so give the
+    // overlay a chance to reach the screen before blocking the main thread.
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self startLoading];
+    });
+}
+
+- (void)dealloc {
+    [_settleTimer invalidate];
+    [_webView removeObserver:self forKeyPath:@"estimatedProgress"];
+}
+
+- (void)startLoading {
+    [self.loadingOverlay setStage:@"Preparing compatibility layer" detail:nil];
+
     [self injectIOSVersion];
     [self injectCustomCSS];
     [self injectTranspiler];
     [self injectPatch];
     [PolyfillsLoader injectPolyfillsIntoController:_webView.configuration.userContentController];
     [self injectMatchMediaAddEventListener];
-    
+
+    [self.loadingOverlay setProgress:0.05 animated:YES];
+    [self.loadingOverlay setStage:@"Connecting to claude.ai" detail:nil];
+
     [_webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:@"https://claude.ai"]]];
 //    [_webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:@"http://192.168.1.136:3000"]]];
 }
@@ -143,29 +187,271 @@
     [_webView reload];
 }
 
-- (void)webView:(WKWebView *)webView didFinishNavigation:(WKNavigation *)navigation {
-    [webView.scrollView.refreshControl endRefreshing];
+#pragma mark - Loading overlay
+
+- (void)showLoadingOverlay {
+    if (self.loadingOverlay.superview != nil) {
+        return;
+    }
+
+    LoadingOverlayView *overlay = [[LoadingOverlayView alloc] initWithFrame:self.view.bounds];
+    overlay.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    [self.view addSubview:overlay];
+    self.loadingOverlay = overlay;
+
+    [overlay setStage:@"Starting" detail:nil];
+
+    self.modulesExpected = [[NSUserDefaults standardUserDefaults] integerForKey:kModuleCountKey];
+    [self resetLoadingProgress];
 }
 
-// Replace your handler method with:
+- (void)resetLoadingProgress {
+    self.modulesDone = 0;
+    self.pendingScripts = 0;
+    self.pageReady = NO;
+    self.navigationFinished = NO;
+    self.lastActivity = [NSDate date];
+    self.loadingStartedAt = [NSDate date];
+
+    [self.settleTimer invalidate];
+    self.settleTimer = [NSTimer scheduledTimerWithTimeInterval:0.5
+                                                        target:self
+                                                      selector:@selector(checkIfSettled)
+                                                      userInfo:nil
+                                                       repeats:YES];
+}
+
+- (BOOL)isLoadingOverlayVisible {
+    return self.loadingOverlay.superview != nil;
+}
+
+- (void)noteActivity {
+    self.lastActivity = [NSDate date];
+}
+
+/// Dismisses the overlay once module activity has stopped, or after a hard timeout.
+- (void)checkIfSettled {
+    if (![self isLoadingOverlayVisible]) {
+        [self.settleTimer invalidate];
+        self.settleTimer = nil;
+        return;
+    }
+
+    if ([[NSDate date] timeIntervalSinceDate:self.loadingStartedAt] > kLoadingTimeout) {
+        NSLog(@"[loading] timed out after %.0fs, dismissing overlay", kLoadingTimeout);
+        [self finishLoading];
+        return;
+    }
+
+    if (self.pendingScripts > 0) {
+        return;
+    }
+
+    NSTimeInterval idle = [[NSDate date] timeIntervalSinceDate:self.lastActivity];
+    if (self.pageReady) {
+        if (idle >= kSettleAfterReadySignal) {
+            [self finishLoading];
+        }
+        return;
+    }
+
+    // No ready signal from the page: only bail out once the navigation itself
+    // finished and nothing has been transpiled for a while.
+    if (self.navigationFinished && idle >= kSettleWithoutReadySignal) {
+        [self finishLoading];
+    }
+}
+
+- (void)finishLoading {
+    [self.settleTimer invalidate];
+    self.settleTimer = nil;
+
+    if (self.modulesDone > 0) {
+        [[NSUserDefaults standardUserDefaults] setInteger:self.modulesDone forKey:kModuleCountKey];
+    }
+
+    [self.loadingOverlay setStage:@"Ready" detail:nil];
+    [self.loadingOverlay setProgress:1.0 animated:YES];
+    [self.loadingOverlay dismiss];
+}
+
+- (void)updateModuleProgress {
+    if (![self isLoadingOverlayVisible]) {
+        return;
+    }
+
+    float progress;
+    if (self.modulesExpected > 0) {
+        float ratio = MIN(1.0f, (float)self.modulesDone / (float)self.modulesExpected);
+        progress = 0.28f + 0.67f * ratio;
+    } else {
+        // First launch: no estimate of the module count, approach 0.88 asymptotically.
+        progress = 0.28f + 0.6f * (1.0f - expf(-(float)self.modulesDone / 30.0f));
+    }
+    [self.loadingOverlay setProgress:progress animated:YES];
+}
+
+- (NSString *)moduleStageText {
+    if (self.modulesExpected > 0) {
+        return [NSString stringWithFormat:@"Compiling modules · %ld/%ld",
+                (long)MIN(self.modulesDone, self.modulesExpected), (long)self.modulesExpected];
+    }
+    if (self.modulesDone > 0) {
+        return [NSString stringWithFormat:@"Compiling modules · %ld", (long)self.modulesDone];
+    }
+    return @"Compiling modules";
+}
+
+- (void)showLoadingError:(NSError *)error {
+    if (![self isLoadingOverlayVisible]) {
+        return;
+    }
+
+    [self.settleTimer invalidate];
+    self.settleTimer = nil;
+
+    __weak typeof(self) weakSelf = self;
+    NSString *message = [NSString stringWithFormat:@"Could not load claude.ai\n%@", error.localizedDescription];
+    [self.loadingOverlay showMessage:message buttonTitle:@"Retry" handler:^{
+        typeof(self) strongSelf = weakSelf;
+        if (!strongSelf) {
+            return;
+        }
+        [strongSelf.loadingOverlay resetToLoading];
+        [strongSelf.loadingOverlay setStage:@"Connecting to claude.ai" detail:nil];
+        [strongSelf resetLoadingProgress];
+        [strongSelf.webView reload];
+    }];
+}
+
+#pragma mark - KVO
+
+- (void)observeValueForKeyPath:(NSString *)keyPath
+                     ofObject:(id)object
+                       change:(NSDictionary *)change
+                      context:(void *)context {
+    if (![keyPath isEqualToString:@"estimatedProgress"]) {
+        return;
+    }
+    if (![self isLoadingOverlayVisible] || self.modulesDone > 0) {
+        return;
+    }
+    // The page fetch itself only accounts for the first quarter of the bar.
+    [self.loadingOverlay setProgress:0.05f + 0.20f * self.webView.estimatedProgress animated:YES];
+}
+
+#pragma mark - WKNavigationDelegate
+
+- (void)webView:(WKWebView *)webView didStartProvisionalNavigation:(WKNavigation *)navigation {
+    if ([self isLoadingOverlayVisible]) {
+        [self.loadingOverlay setStage:@"Connecting to claude.ai" detail:webView.URL.host];
+        [self noteActivity];
+    }
+}
+
+- (void)webView:(WKWebView *)webView didCommitNavigation:(WKNavigation *)navigation {
+    if ([self isLoadingOverlayVisible] && self.modulesDone == 0) {
+        [self.loadingOverlay setStage:@"Loading page" detail:webView.URL.path];
+        [self noteActivity];
+    }
+}
+
+- (void)webView:(WKWebView *)webView didFinishNavigation:(WKNavigation *)navigation {
+    [webView.scrollView.refreshControl endRefreshing];
+
+    self.navigationFinished = YES;
+    if ([self isLoadingOverlayVisible] && self.modulesDone == 0) {
+        [self.loadingOverlay setStage:@"Starting Claude" detail:nil];
+        [self.loadingOverlay setProgress:0.28 animated:YES];
+    }
+}
+
+- (void)webView:(WKWebView *)webView didFailProvisionalNavigation:(WKNavigation *)navigation withError:(NSError *)error {
+    [webView.scrollView.refreshControl endRefreshing];
+    if (error.code != NSURLErrorCancelled) {
+        [self showLoadingError:error];
+    }
+}
+
+- (void)webView:(WKWebView *)webView didFailNavigation:(WKNavigation *)navigation withError:(NSError *)error {
+    [webView.scrollView.refreshControl endRefreshing];
+    if (error.code != NSURLErrorCancelled) {
+        [self showLoadingError:error];
+    }
+}
+
+#pragma mark - WKScriptMessageHandler
+
 - (void)userContentController:(WKUserContentController *)userContentController
       didReceiveScriptMessage:(WKScriptMessage *)message
 {
+    if ([message.name isEqualToString:@"loadingStatus"]) {
+        [self handleLoadingStatus:message.body];
+        return;
+    }
+
     if (![message.name isEqualToString:@"patchScript"]) {
         return;
     }
-    
+
     NSString *code = message.body;
-    
+    NSString *file = nil;
+    if ([message.body isKindOfClass:NSDictionary.class]) {
+        code = message.body[@"code"];
+        file = message.body[@"file"];
+    }
+    if (![code isKindOfClass:NSString.class]) {
+        return;
+    }
+
+    [self noteActivity];
+    if ([self isLoadingOverlayVisible]) {
+        self.pendingScripts += 1;
+        [self.loadingOverlay setStage:[self moduleStageText] detail:file];
+    }
+
     NSString *wrapped = [NSString stringWithFormat:@"%@\n;'ok'", code];
 
+    __weak typeof(self) weakSelf = self;
     [self.webView evaluateJavaScript:wrapped completionHandler:^(id res, NSError *err) {
         if (err) {
             NSLog(@"[evaluateJavaScript]: fail %@", code);
         } else {
             NSLog(@"[evaluateJavaScript]: success"); // always return a serializable value
         }
+
+        typeof(self) strongSelf = weakSelf;
+        if (!strongSelf) {
+            return;
+        }
+        [strongSelf noteActivity];
+        strongSelf.modulesDone += 1;
+        if ([strongSelf isLoadingOverlayVisible]) {
+            strongSelf.pendingScripts = MAX(0, strongSelf.pendingScripts - 1);
+            [strongSelf.loadingOverlay setStage:[strongSelf moduleStageText] detail:file];
+            [strongSelf updateModuleProgress];
+        }
     }];
+}
+
+- (void)handleLoadingStatus:(id)body {
+    if (![body isKindOfClass:NSDictionary.class] || ![self isLoadingOverlayVisible]) {
+        return;
+    }
+
+    NSString *stage = body[@"stage"];
+    NSString *file = body[@"file"];
+
+    if ([stage isEqualToString:@"boot"]) {
+        [self noteActivity];
+        [self.loadingOverlay setStage:@"Patching JavaScript engine" detail:nil];
+    } else if ([stage isEqualToString:@"download"]) {
+        [self noteActivity];
+        [self.loadingOverlay setStage:self.modulesDone > 0 ? [self moduleStageText] : @"Downloading modules"
+                              detail:file];
+    } else if ([stage isEqualToString:@"ready"]) {
+        self.pageReady = YES;
+    }
 }
 
 @end

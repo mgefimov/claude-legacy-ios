@@ -10,6 +10,7 @@
 		CE123A592F5EDE2C008A1A3A /* Polyfills in Resources */ = {isa = PBXBuildFile; fileRef = CE123A582F5EDE2C008A1A3A /* Polyfills */; };
 		CE123A5C2F5EDE2D008A1A3A /* PolyfillsLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = CE123A5B2F5EDE2D008A1A3A /* PolyfillsLoader.m */; };
 		CEADC8192F5E8F26000F74EA /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CEADC8182F5E8F26000F74EA /* AppDelegate.m */; };
+		E9AA10032FD0000000000003 /* LoadingOverlayView.m in Sources */ = {isa = PBXBuildFile; fileRef = E9AA10022FD0000000000002 /* LoadingOverlayView.m */; };
 		CEADC8242F5E8F26000F74EA /* SceneDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CEADC8232F5E8F26000F74EA /* SceneDelegate.m */; };
 		CEADC8272F5E8F26000F74EA /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CEADC8262F5E8F26000F74EA /* ViewController.m */; };
 		CEADC82A2F5E8F26000F74EA /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CEADC8282F5E8F26000F74EA /* LaunchScreen.storyboard */; };
@@ -76,6 +77,8 @@
 		CEADC8442F5E8F29000F74EA /* ClaudeLegacyUITests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ClaudeLegacyUITests.m; sourceTree = "<group>"; };
 		CEADC8462F5E8F29000F74EA /* ClaudeLegacyUITestsLaunchTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ClaudeLegacyUITestsLaunchTests.m; sourceTree = "<group>"; };
 		CEADC85D2F5E8F29000F74EA /* patch.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = patch.js; sourceTree = "<group>"; };
+		E9AA10012FD0000000000001 /* LoadingOverlayView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LoadingOverlayView.h; sourceTree = "<group>"; };
+		E9AA10022FD0000000000002 /* LoadingOverlayView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LoadingOverlayView.m; sourceTree = "<group>"; };
 		E92D5DA92FC32429005460E8 /* MediaQueryList.addEventListener.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = MediaQueryList.addEventListener.js; sourceTree = "<group>"; };
 		E95FE25B3012048E00EA31C6 /* legacy-transpiler.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = "legacy-transpiler.js"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -131,6 +134,8 @@
 			children = (
 				CEADC8172F5E8F26000F74EA /* AppDelegate.h */,
 				CEADC8182F5E8F26000F74EA /* AppDelegate.m */,
+				E9AA10012FD0000000000001 /* LoadingOverlayView.h */,
+				E9AA10022FD0000000000002 /* LoadingOverlayView.m */,
 				CE123A5A2F5EDE2D008A1A3A /* PolyfillsLoader.h */,
 				CE123A5B2F5EDE2D008A1A3A /* PolyfillsLoader.m */,
 				CEADC8222F5E8F26000F74EA /* SceneDelegate.h */,
@@ -302,6 +307,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				CEADC8272F5E8F26000F74EA /* ViewController.m in Sources */,
+				E9AA10032FD0000000000003 /* LoadingOverlayView.m in Sources */,
 				CE123A5C2F5EDE2D008A1A3A /* PolyfillsLoader.m in Sources */,
 				CEADC8192F5E8F26000F74EA /* AppDelegate.m in Sources */,
 				CEADC8312F5E8F29000F74EA /* main.m in Sources */,
