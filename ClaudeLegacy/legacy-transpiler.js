@@ -22,9 +22,11 @@ var LegacyTranspiler = (() => {
   var index_exports = {};
   __export(index_exports, {
     exportModule: () => exportModule,
+    getModuleExports: () => getModuleExports,
     importModule: () => importModule,
     init: () => init,
     loadCode: () => loadCode,
+    onExportsUpdated: () => onExportsUpdated,
     transpile: () => transpile
   });
 
@@ -7147,7 +7149,7 @@ var LegacyTranspiler = (() => {
   }
 
   // src/transforms/moduleExportsAccess.ts
-  function moduleExportsAccess(source, start, end) {
+  function legacyCall(method, args, start, end) {
     return {
       type: "CallExpression",
       callee: {
@@ -7161,25 +7163,38 @@ var LegacyTranspiler = (() => {
           start,
           end
         },
-        property: { type: "Identifier", name: "importModule", start, end },
+        property: { type: "Identifier", name: method, start, end },
         computed: false,
         optional: false,
         start,
         end
       },
-      arguments: [source],
+      arguments: args,
       optional: false,
       start,
       end
     };
   }
+  function moduleExportsAccess(source, start, end, importer) {
+    const args = [source];
+    if (importer !== void 0) {
+      args.push({ type: "Literal", value: importer, start, end });
+    }
+    return legacyCall("importModule", args, start, end);
+  }
+  function moduleGetExportsAccess(source, start, end) {
+    return legacyCall("getModuleExports", [source], start, end);
+  }
+  function onExportsUpdatedAccess(source, callback, start, end) {
+    return legacyCall("onExportsUpdated", [source, callback], start, end);
+  }
 
   // src/transforms/staticImportToDynamic.ts
-  function transformStaticImports(ast) {
+  function transformStaticImports(ast, src) {
     ast.body = ast.body.flatMap((node) => {
       if (node.type !== "ImportDeclaration") return [node];
       if (node.specifiers.length === 0) return [];
-      const moduleCall = moduleExportsAccess(node.source, node.start, node.end);
+      const moduleCall = moduleExportsAccess(node.source, node.start, node.end, src);
       const moduleAccess = {
         type: "AwaitExpression",
         argument: moduleCall,
@@ -7234,7 +7249,7 @@ var LegacyTranspiler = (() => {
       }
       const decl = {
         type: "VariableDeclaration",
-        kind: "const",
+        kind: "let",
         declarations: [{
           type: "VariableDeclarator",
           id: {
@@ -7250,15 +7265,79 @@ var LegacyTranspiler = (() => {
         start: node.start,
         end: node.end
       };
-      return [decl];
+      return [decl, buildResyncStatement(node.source, properties, node.start, node.end)];
     });
+  }
+  function buildResyncStatement(source, properties, start, end) {
+    const patternClone = {
+      type: "ObjectPattern",
+      properties: properties.map(cloneAssignmentProperty),
+      start,
+      end
+    };
+    const assignment = {
+      type: "AssignmentExpression",
+      operator: "=",
+      left: patternClone,
+      right: moduleGetExportsAccess(cloneLiteral(source), start, end),
+      start,
+      end
+    };
+    const arrow = {
+      type: "ArrowFunctionExpression",
+      id: null,
+      params: [],
+      generator: false,
+      async: false,
+      expression: false,
+      body: {
+        type: "BlockStatement",
+        body: [{ type: "ExpressionStatement", expression: assignment, start, end }],
+        start,
+        end
+      },
+      start,
+      end
+    };
+    return {
+      type: "ExpressionStatement",
+      expression: onExportsUpdatedAccess(cloneLiteral(source), arrow, start, end),
+      start,
+      end
+    };
+  }
+  function cloneLiteral(lit) {
+    return { type: "Literal", value: lit.value, start: lit.start, end: lit.end };
+  }
+  function cloneAssignmentProperty(p) {
+    const value = p.value.type === "Identifier" ? { type: "Identifier", name: p.value.name, start: p.value.start, end: p.value.end } : { type: "Identifier", name: "default", start: p.start, end: p.end };
+    return {
+      type: "Property",
+      key: cloneKey(p.key),
+      value,
+      kind: "init",
+      computed: p.computed,
+      method: false,
+      shorthand: p.shorthand,
+      start: p.start,
+      end: p.end
+    };
+  }
+  function cloneKey(key) {
+    if (key.type === "Identifier") {
+      return { type: "Identifier", name: key.name, start: key.start, end: key.end };
+    }
+    if (key.type === "Literal") {
+      return { type: "Literal", value: key.value, start: key.start, end: key.end };
+    }
+    return key;
   }
 
   // src/transforms/resolveDynamicImport.ts
-  var createDynamicImportsVisitor = () => {
+  var createDynamicImportsVisitor = (src) => {
     return {
       ImportExpression(node) {
-        mutateNode(node, moduleExportsAccess(node.source, node.start, node.end));
+        mutateNode(node, moduleExportsAccess(node.source, node.start, node.end, src));
       }
     };
   };
@@ -7271,38 +7350,54 @@ var LegacyTranspiler = (() => {
 
   // src/transforms/replaceImportMeta.ts
   function createImportMetaVisitor(options2) {
+    const metaReplacements = /* @__PURE__ */ new WeakSet();
+    const urlExpression = (start, end) => {
+      if (options2 == null ? void 0 : options2.url) {
+        return { type: "Literal", value: options2.url, raw: JSON.stringify(options2.url), start, end };
+      }
+      return {
+        type: "MemberExpression",
+        object: {
+          type: "MemberExpression",
+          object: { type: "Identifier", name: "document", start, end },
+          property: { type: "Identifier", name: "currentScript", start, end },
+          computed: false,
+          optional: false,
+          start,
+          end
+        },
+        property: { type: "Identifier", name: "src", start, end },
+        computed: false,
+        optional: false,
+        start,
+        end
+      };
+    };
     return {
+      MetaProperty(node) {
+        if (node.meta.name !== "import" || node.property.name !== "meta") return;
+        const replacement = {
+          type: "ObjectExpression",
+          properties: [{
+            type: "Property",
+            key: { type: "Identifier", name: "url", start: node.start, end: node.end },
+            value: urlExpression(node.start, node.end),
+            kind: "init",
+            computed: false,
+            method: false,
+            shorthand: false,
+            start: node.start,
+            end: node.end
+          }],
+          start: node.start,
+          end: node.end
+        };
+        Object.assign(node, replacement);
+        metaReplacements.add(node);
+      },
       MemberExpression(node) {
-        if (node.object.type === "MetaProperty" && node.object.meta.name === "import" && node.object.property.name === "meta" && node.property.type === "Identifier" && node.property.name === "url") {
-          if (options2 == null ? void 0 : options2.url) {
-            const literal2 = {
-              type: "Literal",
-              value: options2.url,
-              raw: JSON.stringify(options2.url),
-              start: node.start,
-              end: node.end
-            };
-            Object.assign(node, literal2);
-          } else {
-            const replacement = {
-              type: "MemberExpression",
-              object: {
-                type: "MemberExpression",
-                object: { type: "Identifier", name: "document", start: node.start, end: node.end },
-                property: { type: "Identifier", name: "currentScript", start: node.start, end: node.end },
-                computed: false,
-                optional: false,
-                start: node.start,
-                end: node.end
-              },
-              property: { type: "Identifier", name: "src", start: node.start, end: node.end },
-              computed: false,
-              optional: false,
-              start: node.start,
-              end: node.end
-            };
-            Object.assign(node, replacement);
-          }
+        if (!node.computed && node.property.type === "Identifier" && node.property.name === "url" && metaReplacements.has(node.object)) {
+          Object.assign(node, urlExpression(node.start, node.end));
         }
       }
     };
@@ -7442,7 +7537,9 @@ var LegacyTranspiler = (() => {
         if (node.regex) {
           node.regex.pattern = applyMask(node.regex.pattern, lookbehindKeepMask(node.regex.pattern));
           node.raw = "/".concat(node.regex.pattern, "/").concat(node.regex.flags);
+          return;
         }
+        stripLiteralPattern(node);
       },
       CallExpression(node) {
         if (isRegExpCallee(node.callee)) stripRegExpArg(node.arguments[0]);
@@ -7491,13 +7588,13 @@ var LegacyTranspiler = (() => {
           exports.push({ key: "default", value: decl.id.name });
           return [decl];
         }
-        const tempId = { type: "Identifier", name: "__default", start: decl.start, end: decl.end };
+        const tempId2 = { type: "Identifier", name: "__default", start: decl.start, end: decl.end };
         const tempDecl = {
           type: "VariableDeclaration",
           kind: "var",
           declarations: [{
             type: "VariableDeclarator",
-            id: tempId,
+            id: tempId2,
             init: decl,
             start: decl.start,
             end: decl.end
@@ -7573,6 +7670,7 @@ var LegacyTranspiler = (() => {
   // src/transforms/transformStaticBlock.ts
   var counter = 0;
   var STATIC_BLOCK_METHOD_PREFIX = "_static_block__";
+  var STATIC_BLOCK_CLASS_TEMP = "_static_block_class__";
   function makeCall(className, methodName) {
     return {
       type: "ExpressionStatement",
@@ -7648,6 +7746,92 @@ var LegacyTranspiler = (() => {
     }
     return [stmt];
   }
+  function tempId() {
+    return { type: "Identifier", name: STATIC_BLOCK_CLASS_TEMP, start: 0, end: 0 };
+  }
+  function wrapClassExpression(node) {
+    const blocks = [];
+    const kept = node.body.body.filter((member) => {
+      if (member.type === "StaticBlock") {
+        blocks.push(member);
+        return false;
+      }
+      return true;
+    });
+    const innerClass = {
+      type: "ClassExpression",
+      id: node.id,
+      superClass: node.superClass,
+      body: { type: "ClassBody", body: kept, start: node.body.start, end: node.body.end },
+      start: node.start,
+      end: node.end
+    };
+    const stmts = [
+      {
+        type: "VariableDeclaration",
+        kind: "const",
+        declarations: [{
+          type: "VariableDeclarator",
+          id: tempId(),
+          init: innerClass,
+          start: 0,
+          end: 0
+        }],
+        start: 0,
+        end: 0
+      },
+      ...blocks.map((block) => ({
+        type: "ExpressionStatement",
+        expression: {
+          type: "CallExpression",
+          callee: {
+            type: "MemberExpression",
+            object: {
+              type: "FunctionExpression",
+              id: null,
+              params: [],
+              body: { type: "BlockStatement", body: block.body, start: block.start, end: block.end },
+              generator: false,
+              expression: false,
+              async: false,
+              start: block.start,
+              end: block.end
+            },
+            property: { type: "Identifier", name: "call", start: 0, end: 0 },
+            computed: false,
+            optional: false,
+            start: 0,
+            end: 0
+          },
+          arguments: [tempId()],
+          optional: false,
+          start: 0,
+          end: 0
+        },
+        start: 0,
+        end: 0
+      })),
+      { type: "ReturnStatement", argument: tempId(), start: 0, end: 0 }
+    ];
+    return {
+      type: "CallExpression",
+      callee: {
+        type: "FunctionExpression",
+        id: null,
+        params: [],
+        body: { type: "BlockStatement", body: stmts, start: node.start, end: node.end },
+        generator: false,
+        expression: false,
+        async: false,
+        start: node.start,
+        end: node.end
+      },
+      arguments: [],
+      optional: false,
+      start: node.start,
+      end: node.end
+    };
+  }
   function createStaticBlocksVisitor() {
     counter = 0;
     return {
@@ -7661,6 +7845,18 @@ var LegacyTranspiler = (() => {
       },
       BlockStatement(node) {
         node.body = node.body.flatMap(processStmt);
+      },
+      // Class *expressions* in any position (call arg, return, parenthesized,
+      // and `const X = class`). Post-order visits this before the enclosing
+      // Program/BlockStatement, so the IIFE wrap here takes over any class
+      // expression with static blocks — including `const X = class`, for which
+      // it's equally correct — leaving processStmt to only ever handle class
+      // *declarations*.
+      ClassExpression(node) {
+        const hasStaticBlock = node.body.body.some((m) => m.type === "StaticBlock");
+        if (hasStaticBlock) {
+          Object.assign(node, wrapClassExpression(node));
+        }
       }
     };
   }
@@ -8044,7 +8240,7 @@ var LegacyTranspiler = (() => {
   }
 
   // package.json
-  var version2 = "0.1.10";
+  var version2 = "0.1.17";
 
   // src/index.ts
   var options;
@@ -8059,8 +8255,22 @@ var LegacyTranspiler = (() => {
     return minor >= min[1];
   }
   var _moduleExports = {};
+  var _moduleFinalized = /* @__PURE__ */ new Set();
   var _importWaitlist = {};
+  var _exportsUpdatedWaitlist = {};
+  var _blockedOn = {};
   var loaded = /* @__PURE__ */ new Set();
+  function isCircular(source, importer) {
+    const seen = /* @__PURE__ */ new Set();
+    let current2 = source;
+    while (current2 !== void 0) {
+      if (current2 === importer) return true;
+      if (seen.has(current2)) return false;
+      seen.add(current2);
+      current2 = _blockedOn[current2];
+    }
+    return false;
+  }
   if (typeof window !== "undefined") {
     patchFetch();
     patchAnimate();
@@ -8109,7 +8319,19 @@ var LegacyTranspiler = (() => {
   }
   function exportModule(source, exports) {
     console.log("[exportModule] ".concat(source, " \u2192"), exports);
-    _moduleExports[source] = exports;
+    if (_moduleExports[source]) {
+      Object.assign(_moduleExports[source], exports);
+    } else {
+      _moduleExports[source] = exports;
+    }
+    if (_exportsUpdatedWaitlist[source]) {
+      for (const callback of _exportsUpdatedWaitlist[source]) {
+        callback();
+      }
+      delete _exportsUpdatedWaitlist[source];
+    }
+    _moduleFinalized.add(source);
+    delete _blockedOn[source];
     if (_importWaitlist[source]) {
       for (const resolve of _importWaitlist[source]) {
         resolve();
@@ -8117,11 +8339,34 @@ var LegacyTranspiler = (() => {
       delete _importWaitlist[source];
     }
   }
-  function importModule(source) {
+  function onExportsUpdated(source, callback) {
+    source = resolveModule(source);
+    if (_moduleFinalized.has(source)) {
+      callback();
+      return;
+    }
+    if (!_exportsUpdatedWaitlist[source]) {
+      _exportsUpdatedWaitlist[source] = [];
+    }
+    _exportsUpdatedWaitlist[source].push(callback);
+  }
+  function getModuleExports(source) {
+    return _moduleExports[resolveModule(source)];
+  }
+  function importModule(source, importer) {
     source = resolveModule(source);
     console.log("[importModule]", source);
-    if (_moduleExports[source]) {
+    if (_moduleFinalized.has(source)) {
       return Promise.resolve(_moduleExports[source]);
+    }
+    if (importer !== void 0 && isCircular(source, importer)) {
+      if (!_moduleExports[source]) {
+        _moduleExports[source] = {};
+      }
+      return Promise.resolve(_moduleExports[source]);
+    }
+    if (importer !== void 0) {
+      _blockedOn[importer] = source;
     }
     return new Promise((resolve) => {
       if (!_importWaitlist[source]) {
@@ -8139,9 +8384,9 @@ var LegacyTranspiler = (() => {
       sourceType: "module",
       allowAwaitOutsideFunction: true
     });
-    transformStaticImports(ast);
+    transformStaticImports(ast, src);
     const visitors = [
-      createDynamicImportsVisitor(),
+      createDynamicImportsVisitor(src),
       createImportMetaVisitor({ url: src }),
       createLookbehindVisitor()
     ];
