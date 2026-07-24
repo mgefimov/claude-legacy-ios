@@ -18,6 +18,7 @@
 @property (nonatomic, strong) UIButton *retryButton;
 @property (nonatomic, strong) UIButton *continueButton;
 @property (nonatomic, strong) UILabel *versionLabel;
+@property (nonatomic, copy, nullable) NSString *siteBuild;
 @property (nonatomic, copy, nullable) void (^retryHandler)(void);
 @property (nonatomic, copy, nullable) void (^continueHandler)(void);
 
@@ -135,14 +136,31 @@
     _versionLabel.font = [UIFont systemFontOfSize:12];
     _versionLabel.textColor = UIColor.tertiaryLabelColor;
     _versionLabel.textAlignment = NSTextAlignmentCenter;
-    _versionLabel.text = [self versionString];
+    _versionLabel.numberOfLines = 2;
     _versionLabel.translatesAutoresizingMaskIntoConstraints = NO;
     [self addSubview:_versionLabel];
+    [self updateVersionLabel];
 
     [NSLayoutConstraint activateConstraints:@[
         [_versionLabel.centerXAnchor constraintEqualToAnchor:self.centerXAnchor],
         [_versionLabel.bottomAnchor constraintEqualToAnchor:self.safeAreaLayoutGuide.bottomAnchor constant:-16],
     ]];
+}
+
+- (void)setSiteBuild:(NSString *)build {
+    if (build == _siteBuild || [build isEqualToString:_siteBuild]) {
+        return;
+    }
+    _siteBuild = [build copy];
+    [self updateVersionLabel];
+}
+
+- (void)updateVersionLabel {
+    NSString *text = [self versionString];
+    if (_siteBuild.length > 0) {
+        text = [text stringByAppendingFormat:@"\nclaude.ai %@", _siteBuild];
+    }
+    _versionLabel.text = text;
 }
 
 - (NSString *)versionString {

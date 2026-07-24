@@ -17,6 +17,10 @@ NS_ASSUME_NONNULL_BEGIN
 /// Progress in 0...1. Never moves backwards.
 - (void)setProgress:(float)progress animated:(BOOL)animated;
 
+/// Build fingerprint of the loaded site, shown under the app version once known.
+/// claude.ai exposes no version number, so this is the hash from its entry chunk.
+- (void)setSiteBuild:(nullable NSString *)build;
+
 /// Replaces the progress UI with an error, the raw failure text and two actions.
 /// `details` is meant for console-style output (JS exceptions, network errors).
 - (void)showErrorWithMessage:(NSString *)message

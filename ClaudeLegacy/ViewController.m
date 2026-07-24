@@ -36,6 +36,7 @@ static const NSTimeInterval kLoadingTimeout = 60.0;
 @property (nonatomic, assign) BOOL navigationFinished;
 @property (nonatomic, copy, nullable) NSString *lastErrorMessage;
 @property (nonatomic, assign) NSInteger errorCount;
+@property (nonatomic, copy, nullable) NSString *siteBuild;
 
 @end
 
@@ -353,6 +354,32 @@ static const NSTimeInterval kLoadingTimeout = 60.0;
     [self showFailure:@"Could not load claude.ai." details:details];
 }
 
+/// claude.ai ships no version number, and its entry chunk is served as
+/// `index-<hash>.js` with the hash changing on every deploy — so that hash is the
+/// closest thing to a build identifier. The module file names already reach us
+/// through the loading messages, so it is picked out of those.
+- (void)noteSiteBuildFromFile:(NSString *)file {
+    if (![file isKindOfClass:NSString.class] ||
+        ![file hasPrefix:@"index-"] || ![file hasSuffix:@".js"]) {
+        return;
+    }
+
+    NSUInteger prefix = @"index-".length;
+    NSUInteger suffix = @".js".length;
+    if (file.length <= prefix + suffix) {
+        return;
+    }
+
+    NSString *build = [file substringWithRange:NSMakeRange(prefix, file.length - prefix - suffix)];
+    if (build.length == 0 || [build isEqualToString:self.siteBuild]) {
+        return;
+    }
+
+    self.siteBuild = build;
+    [self.loadingOverlay setSiteBuild:build];
+    NSLog(@"[loading] claude.ai build %@", build);
+}
+
 /// Remembers the first failure seen while loading; -checkIfSettled decides
 /// whether it actually kept the page from starting.
 - (void)recordErrorMessage:(NSString *)message {
@@ -466,6 +493,7 @@ static const NSTimeInterval kLoadingTimeout = 60.0;
     }
 
     [self noteActivity];
+    [self noteSiteBuildFromFile:file];
     if ([self isLoadingOverlayVisible]) {
         self.pendingScripts += 1;
         [self.loadingOverlay setStage:[self moduleStageText] detail:file];
@@ -512,6 +540,7 @@ static const NSTimeInterval kLoadingTimeout = 60.0;
         [self.loadingOverlay setStage:@"Patching JavaScript engine" detail:nil];
     } else if ([stage isEqualToString:@"download"]) {
         [self noteActivity];
+        [self noteSiteBuildFromFile:file];
         [self.loadingOverlay setStage:self.modulesDone > 0 ? [self moduleStageText] : @"Downloading modules"
                               detail:file];
     } else if ([stage isEqualToString:@"ready"]) {
