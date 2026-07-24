@@ -41,14 +41,21 @@ static const NSTimeInterval kLoadingTimeout = 60.0;
 
 @implementation ViewController
 
-- (void) injectPatch {
-    NSURL *scriptURL = [NSBundle.mainBundle URLForResource:@"patch" withExtension:@"js"];
-    
-    NSString *js = [NSString stringWithContentsOfURL:scriptURL encoding:NSUTF8StringEncoding error:nil];
-    if (js) {
-        WKUserScript *userScript = [[WKUserScript alloc] initWithSource:js injectionTime:WKUserScriptInjectionTimeAtDocumentStart forMainFrameOnly:YES];
-        [_webView.configuration.userContentController addUserScript:userScript];
+/// Injects a bundled .js file as a document-start user script, in the order added.
+- (void)injectScriptNamed:(NSString *)name {
+    NSURL *scriptURL = [NSBundle.mainBundle URLForResource:name withExtension:@"js"];
+    NSString *js = scriptURL
+        ? [NSString stringWithContentsOfURL:scriptURL encoding:NSUTF8StringEncoding error:nil]
+        : nil;
+    if (js.length == 0) {
+        NSLog(@"[inject] %@.js is missing from the bundle", name);
+        return;
     }
+
+    WKUserScript *userScript = [[WKUserScript alloc] initWithSource:js
+                                                     injectionTime:WKUserScriptInjectionTimeAtDocumentStart
+                                                  forMainFrameOnly:YES];
+    [_webView.configuration.userContentController addUserScript:userScript];
 }
 
 - (void)injectIOSVersion {
@@ -67,14 +74,34 @@ static const NSTimeInterval kLoadingTimeout = 60.0;
     [_webView.configuration.userContentController addUserScript:script];
 }
 
-- (void) injectTranspiler {
-    NSURL *scriptURL = [NSBundle.mainBundle URLForResource:@"legacy-transpiler" withExtension:@"js"];
-    
-    NSString *js = [NSString stringWithContentsOfURL:scriptURL encoding:NSUTF8StringEncoding error:nil];
-    if (js) {
-        WKUserScript *userScript = [[WKUserScript alloc] initWithSource:js injectionTime:WKUserScriptInjectionTimeAtDocumentStart forMainFrameOnly:YES];
-        [_webView.configuration.userContentController addUserScript:userScript];
+/// Rewrites CSS that newer WebKit parses natively but older versions silently
+/// drop. Each fix is paired with the iOS version that made it unnecessary, so a
+/// system new enough gets nothing injected at all — not even the pipeline.
+- (void)injectCSSCompatibilityFixes {
+    // @{script, major, minor} — the version is the one where WebKit gained the
+    // feature. Order is preserved: it becomes the order of the CSS transforms.
+    NSArray<NSArray *> *fixes = @[
+        @[@"css-layer-flatten",  @15, @4], // @layer, Safari 15.4
+        @[@"css-viewport-units", @15, @4], // dvh/svh/lvh units, Safari 15.4
+    ];
+
+    NSMutableArray<NSString *> *needed = [NSMutableArray array];
+    for (NSArray *fix in fixes) {
+        if (![PolyfillsLoader isIOSVersionOrNewer:[fix[1] integerValue]
+                                            minor:[fix[2] integerValue]]) {
+            [needed addObject:fix[0]];
+        }
     }
+
+    if (needed.count == 0) {
+        return; // nothing to patch on this system
+    }
+
+    [self injectScriptNamed:@"css-compat"]; // the pipeline the fixes register into
+    for (NSString *name in needed) {
+        [self injectScriptNamed:name];
+    }
+    NSLog(@"[inject] CSS fixes: %@", [needed componentsJoinedByString:@", "]);
 }
 
 - (void)injectCustomCSS {
@@ -141,8 +168,9 @@ static const NSTimeInterval kLoadingTimeout = 60.0;
 
     [self injectIOSVersion];
     [self injectCustomCSS];
-    [self injectTranspiler];
-    [self injectPatch];
+    [self injectScriptNamed:@"legacy-transpiler"];
+    [self injectScriptNamed:@"patch"];
+    [self injectCSSCompatibilityFixes];
     [PolyfillsLoader injectPolyfillsIntoController:_webView.configuration.userContentController];
 
     [self.loadingOverlay setProgress:0.05 animated:YES];
