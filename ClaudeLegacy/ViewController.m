@@ -82,7 +82,6 @@ static const NSTimeInterval kLoadingTimeout = 60.0;
     // @{script, major, minor} — the version is the one where WebKit gained the
     // feature. Order is preserved: it becomes the order of the CSS transforms.
     NSArray<NSArray *> *fixes = @[
-        @[@"css-layer-flatten",  @15, @4], // @layer, Safari 15.4
         @[@"css-viewport-units", @15, @4], // dvh/svh/lvh units, Safari 15.4
     ];
 

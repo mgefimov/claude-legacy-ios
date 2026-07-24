@@ -23,7 +23,6 @@
 		E95FE25C3012048E00EA31C6 /* legacy-transpiler.js in Resources */ = {isa = PBXBuildFile; fileRef = E95FE25B3012048E00EA31C6 /* legacy-transpiler.js */; };
 		E9AA10032FD0000000000003 /* LoadingOverlayView.m in Sources */ = {isa = PBXBuildFile; fileRef = E9AA10022FD0000000000002 /* LoadingOverlayView.m */; };
 		E9AA10132FD1000000000013 /* css-compat.js in Resources */ = {isa = PBXBuildFile; fileRef = E9AA10102FD1000000000010 /* css-compat.js */; };
-		E9AA10142FD1000000000014 /* css-layer-flatten.js in Resources */ = {isa = PBXBuildFile; fileRef = E9AA10112FD1000000000011 /* css-layer-flatten.js */; };
 		E9AA10152FD1000000000015 /* css-viewport-units.js in Resources */ = {isa = PBXBuildFile; fileRef = E9AA10122FD1000000000012 /* css-viewport-units.js */; };
 /* End PBXBuildFile section */
 
@@ -80,11 +79,10 @@
 		CEADC8462F5E8F29000F74EA /* ClaudeLegacyUITestsLaunchTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ClaudeLegacyUITestsLaunchTests.m; sourceTree = "<group>"; };
 		CEADC85D2F5E8F29000F74EA /* patch.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = patch.js; sourceTree = "<group>"; };
 		E95FE25B3012048E00EA31C6 /* legacy-transpiler.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = "legacy-transpiler.js"; sourceTree = "<group>"; };
-		E9AA10102FD1000000000010 /* css-compat.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = "css-compat.js"; sourceTree = "<group>"; };
-		E9AA10112FD1000000000011 /* css-layer-flatten.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = "css-layer-flatten.js"; sourceTree = "<group>"; };
-		E9AA10122FD1000000000012 /* css-viewport-units.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = "css-viewport-units.js"; sourceTree = "<group>"; };
 		E9AA10012FD0000000000001 /* LoadingOverlayView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LoadingOverlayView.h; sourceTree = "<group>"; };
 		E9AA10022FD0000000000002 /* LoadingOverlayView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LoadingOverlayView.m; sourceTree = "<group>"; };
+		E9AA10102FD1000000000010 /* css-compat.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = "css-compat.js"; sourceTree = "<group>"; };
+		E9AA10122FD1000000000012 /* css-viewport-units.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = "css-viewport-units.js"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -153,7 +151,6 @@
 				E95FE25B3012048E00EA31C6 /* legacy-transpiler.js */,
 				CEADC85D2F5E8F29000F74EA /* patch.js */,
 				E9AA10102FD1000000000010 /* css-compat.js */,
-				E9AA10112FD1000000000011 /* css-layer-flatten.js */,
 				E9AA10122FD1000000000012 /* css-viewport-units.js */,
 				CEADC8302F5E8F29000F74EA /* main.m */,
 			);
@@ -286,7 +283,6 @@
 				CEADC82D2F5E8F26000F74EA /* Main.storyboard in Resources */,
 				E92D5D8E2FC17322005460E8 /* patch.js in Resources */,
 				E9AA10132FD1000000000013 /* css-compat.js in Resources */,
-				E9AA10142FD1000000000014 /* css-layer-flatten.js in Resources */,
 				E9AA10152FD1000000000015 /* css-viewport-units.js in Resources */,
 				CEADC82A2F5E8F26000F74EA /* LaunchScreen.storyboard in Resources */,
 				CEADC8662F5E8F29000F74EA /* Assets.xcassets in Resources */,
