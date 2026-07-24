@@ -73,8 +73,12 @@
       status({ stage: "ready" });
       return;
     }
+    // Claude paints well after the last module runs — around 15s in on a fast
+    // device, considerably later on an old one. Poll briskly at first, then back
+    // off, so the same number of (layout-forcing) innerText reads covers ~85s
+    // instead of 30s and the native side is not left guessing.
     if (++readyAttempts > 100) return;
-    readyTimer = setTimeout(checkReady, 300);
+    readyTimer = setTimeout(checkReady, readyAttempts < 20 ? 300 : 1000);
   };
 
   const scheduleReadyCheck = () => {

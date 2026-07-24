@@ -18,6 +18,15 @@ static NSString *const kModuleCountKey = @"LastModuleCount";
 /// Seconds without any module activity before the page is assumed to be ready.
 static const NSTimeInterval kSettleAfterReadySignal = 0.3;
 static const NSTimeInterval kSettleWithoutReadySignal = 6.0;
+/// Claude paints seconds after the last module runs — on claude.ai the first text
+/// appears around 15s in, far later than module activity settles, and much later
+/// still on an older device. So a JS error logged along the way must not be called
+/// a failure until the app has really had time to show something.
+/// A module that failed to execute never registered its exports, so everything
+/// importing it stays blocked — once activity stops there is nothing left to wait
+/// for, and no paint is coming.
+static const NSTimeInterval kSettleAfterModuleFailure = 2.5;
+static const NSTimeInterval kMinimumElapsedBeforeErrorScreen = 30.0;
 /// Hard stop: never keep the overlay up longer than this.
 static const NSTimeInterval kLoadingTimeout = 60.0;
 
@@ -35,8 +44,10 @@ static const NSTimeInterval kLoadingTimeout = 60.0;
 @property (nonatomic, assign) BOOL pageReady;
 @property (nonatomic, assign) BOOL navigationFinished;
 @property (nonatomic, copy, nullable) NSString *lastErrorMessage;
+@property (nonatomic, copy, nullable) NSString *moduleFailure;
 @property (nonatomic, assign) NSInteger errorCount;
 @property (nonatomic, copy, nullable) NSString *siteBuild;
+@property (nonatomic, assign) BOOL showingFailure;
 
 @end
 
@@ -211,6 +222,8 @@ static const NSTimeInterval kLoadingTimeout = 60.0;
     self.pendingScripts = 0;
     self.pageReady = NO;
     self.navigationFinished = NO;
+    self.showingFailure = NO;
+    self.moduleFailure = nil;
     self.lastActivity = [NSDate date];
     self.loadingStartedAt = [NSDate date];
 
@@ -238,9 +251,13 @@ static const NSTimeInterval kLoadingTimeout = 60.0;
         return;
     }
 
-    if ([[NSDate date] timeIntervalSinceDate:self.loadingStartedAt] > kLoadingTimeout) {
+    NSTimeInterval elapsed = [[NSDate date] timeIntervalSinceDate:self.loadingStartedAt];
+
+    if (elapsed > kLoadingTimeout) {
         NSLog(@"[loading] timed out after %.0fs", kLoadingTimeout);
-        if (self.pageReady) {
+        // Out of time. If application code did run, the app is most likely just slow
+        // — show it rather than accusing it of failing.
+        if (self.pageReady || self.modulesDone > 0) {
             [self finishLoading];
         } else {
             [self showFailure:@"Claude is taking longer than expected to load."
@@ -264,19 +281,41 @@ static const NSTimeInterval kLoadingTimeout = 60.0;
     // No ready signal from the page: wait until the navigation itself finished
     // and nothing has been transpiled for a while, then decide whether the page
     // simply had nothing to transpile or actually failed.
-    if (!self.navigationFinished || idle < kSettleWithoutReadySignal) {
+    if (!self.navigationFinished) {
+        return;
+    }
+
+    // A module failed to execute, so the import graph is stuck: waiting for a paint
+    // that cannot happen only delays telling the user. A late "ready" still cancels
+    // this, see -handleLoadingStatus:.
+    if (self.moduleFailure != nil && idle >= kSettleAfterModuleFailure) {
+        [self showFailure:@"Claude could not be started on this iOS version."
+                  details:[self errorDetails]];
+        return;
+    }
+
+    if (idle < kSettleWithoutReadySignal) {
+        return;
+    }
+
+    if (self.modulesDone == 0) {
+        [self showFailure:@"The page loaded but no application code was executed."
+                  details:@"No script was intercepted by the transpiler."];
         return;
     }
 
     if (self.lastErrorMessage != nil) {
-        [self showFailure:@"Claude could not be started on this iOS version."
-                  details:[self errorDetails]];
-    } else if (self.modulesDone == 0) {
-        [self showFailure:@"The page loaded but no application code was executed."
-                  details:@"No script was intercepted by the transpiler."];
-    } else {
-        [self finishLoading];
+        // Modules ran but nothing is on screen yet. Errors are common on the way up
+        // and harmless — only conclude failure once the app has had long enough to
+        // paint, and let a late "ready" cancel it (see -handleLoadingStatus:).
+        if (elapsed >= kMinimumElapsedBeforeErrorScreen) {
+            [self showFailure:@"Claude could not be started on this iOS version."
+                      details:[self errorDetails]];
+        }
+        return;
     }
+
+    [self finishLoading];
 }
 
 - (void)finishLoading {
@@ -328,6 +367,7 @@ static const NSTimeInterval kLoadingTimeout = 60.0;
 
     NSLog(@"[loading] failed: %@ (%@)", message, details);
 
+    self.showingFailure = YES;
     [self.settleTimer invalidate];
     self.settleTimer = nil;
 
@@ -514,7 +554,11 @@ static const NSTimeInterval kLoadingTimeout = 60.0;
         }
         if (err) {
             NSString *reason = err.userInfo[@"WKJavaScriptExceptionMessage"] ?: err.localizedDescription;
-            [strongSelf recordErrorMessage:[NSString stringWithFormat:@"%@: %@", file ?: @"module", reason]];
+            NSString *detail = [NSString stringWithFormat:@"%@: %@", file ?: @"module", reason];
+            [strongSelf recordErrorMessage:detail];
+            if (strongSelf.moduleFailure == nil) {
+                strongSelf.moduleFailure = detail;
+            }
         }
         [strongSelf noteActivity];
         strongSelf.modulesDone += 1;
@@ -544,6 +588,11 @@ static const NSTimeInterval kLoadingTimeout = 60.0;
                               detail:file];
     } else if ([stage isEqualToString:@"ready"]) {
         self.pageReady = YES;
+        if (self.showingFailure) {
+            // The page rendered after all, so the error screen was premature.
+            NSLog(@"[loading] page became ready after the error screen — dismissing it");
+            [self finishLoading];
+        }
     } else if ([stage isEqualToString:@"error"]) {
         NSString *jsMessage = [body[@"message"] isKindOfClass:NSString.class] ? body[@"message"] : @"Unknown JavaScript error";
         [self recordErrorMessage:jsMessage];

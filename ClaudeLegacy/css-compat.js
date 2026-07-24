@@ -133,8 +133,9 @@
   observer.observe(document.documentElement, { childList: true, subtree: true });
 
   // Anything already parsed, plus a second pass for inline <style> elements
-  // whose text was filled in after insertion. (There is deliberately no "load"
-  // listener: on claude.ai that event never fires.)
+  // whose text was filled in after insertion. ("load" would fire early here —
+  // claude.ai reaches readyState "complete" seconds before it paints — so it
+  // would add nothing over DOMContentLoaded plus the observer.)
   scan(document);
   document.addEventListener("DOMContentLoaded", () => scan(document));
 })();
