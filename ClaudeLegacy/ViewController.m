@@ -77,34 +77,6 @@ static const NSTimeInterval kLoadingTimeout = 60.0;
     }
 }
 
-- (void) injectMatchMedia {
-    if ([PolyfillsLoader isIOSVersionOrNewer:14 minor:0]) {
-        return;
-    }
-    NSURL *scriptURL = [NSBundle.mainBundle URLForResource:@"matchMedia" withExtension:@"js"];
-    
-    NSString *js = [NSString stringWithContentsOfURL:scriptURL encoding:NSUTF8StringEncoding error:nil];
-
-    if (js) {
-        WKUserScript *userScript = [[WKUserScript alloc] initWithSource:js injectionTime:WKUserScriptInjectionTimeAtDocumentStart forMainFrameOnly:YES];
-        [_webView.configuration.userContentController addUserScript:userScript];
-    }
-}
-
-- (void) injectMatchMediaAddEventListener {
-    if ([PolyfillsLoader isIOSVersionOrNewer:14 minor:0]) {
-        return;
-    }
-    NSURL *scriptURL = [NSBundle.mainBundle URLForResource:@"MediaQueryList.addEventListener" withExtension:@"js"];
-    
-    NSString *js = [NSString stringWithContentsOfURL:scriptURL encoding:NSUTF8StringEncoding error:nil];
-
-    if (js) {
-        WKUserScript *userScript = [[WKUserScript alloc] initWithSource:js injectionTime:WKUserScriptInjectionTimeAtDocumentStart forMainFrameOnly:YES];
-        [_webView.configuration.userContentController addUserScript:userScript];
-    }
-}
-
 - (void)injectCustomCSS {
     NSString *css = @"button[data-testid='login-with-google'] { display: none !important; }"
     "button[data-testid='login-with-google'] + p { display: none !important; }";
@@ -172,7 +144,6 @@ static const NSTimeInterval kLoadingTimeout = 60.0;
     [self injectTranspiler];
     [self injectPatch];
     [PolyfillsLoader injectPolyfillsIntoController:_webView.configuration.userContentController];
-    [self injectMatchMediaAddEventListener];
 
     [self.loadingOverlay setProgress:0.05 animated:YES];
     [self.loadingOverlay setStage:@"Connecting to claude.ai" detail:nil];

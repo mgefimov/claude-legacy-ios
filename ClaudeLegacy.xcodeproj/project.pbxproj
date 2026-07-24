@@ -20,7 +20,6 @@
 		CEADC8472F5E8F29000F74EA /* ClaudeLegacyUITestsLaunchTests.m in Sources */ = {isa = PBXBuildFile; fileRef = CEADC8462F5E8F29000F74EA /* ClaudeLegacyUITestsLaunchTests.m */; };
 		CEADC8662F5E8F29000F74EA /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CEADC82E2F5E8F29000F74EA /* Assets.xcassets */; };
 		E92D5D8E2FC17322005460E8 /* patch.js in Resources */ = {isa = PBXBuildFile; fileRef = CEADC85D2F5E8F29000F74EA /* patch.js */; };
-		E92D5DAA2FC32429005460E8 /* MediaQueryList.addEventListener.js in Resources */ = {isa = PBXBuildFile; fileRef = E92D5DA92FC32429005460E8 /* MediaQueryList.addEventListener.js */; };
 		E95FE25C3012048E00EA31C6 /* legacy-transpiler.js in Resources */ = {isa = PBXBuildFile; fileRef = E95FE25B3012048E00EA31C6 /* legacy-transpiler.js */; };
 		E9AA10032FD0000000000003 /* LoadingOverlayView.m in Sources */ = {isa = PBXBuildFile; fileRef = E9AA10022FD0000000000002 /* LoadingOverlayView.m */; };
 /* End PBXBuildFile section */
@@ -77,7 +76,6 @@
 		CEADC8442F5E8F29000F74EA /* ClaudeLegacyUITests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ClaudeLegacyUITests.m; sourceTree = "<group>"; };
 		CEADC8462F5E8F29000F74EA /* ClaudeLegacyUITestsLaunchTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ClaudeLegacyUITestsLaunchTests.m; sourceTree = "<group>"; };
 		CEADC85D2F5E8F29000F74EA /* patch.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = patch.js; sourceTree = "<group>"; };
-		E92D5DA92FC32429005460E8 /* MediaQueryList.addEventListener.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = MediaQueryList.addEventListener.js; sourceTree = "<group>"; };
 		E95FE25B3012048E00EA31C6 /* legacy-transpiler.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = "legacy-transpiler.js"; sourceTree = "<group>"; };
 		E9AA10012FD0000000000001 /* LoadingOverlayView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LoadingOverlayView.h; sourceTree = "<group>"; };
 		E9AA10022FD0000000000002 /* LoadingOverlayView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LoadingOverlayView.m; sourceTree = "<group>"; };
@@ -146,7 +144,6 @@
 				CEADC82B2F5E8F26000F74EA /* Main.storyboard */,
 				CEADC82E2F5E8F29000F74EA /* Assets.xcassets */,
 				CEADC82F2F5E8F29000F74EA /* Info.plist */,
-				E92D5DA92FC32429005460E8 /* MediaQueryList.addEventListener.js */,
 				E95FE25B3012048E00EA31C6 /* legacy-transpiler.js */,
 				CEADC85D2F5E8F29000F74EA /* patch.js */,
 				CEADC8302F5E8F29000F74EA /* main.m */,
@@ -281,7 +278,6 @@
 				E92D5D8E2FC17322005460E8 /* patch.js in Resources */,
 				CEADC82A2F5E8F26000F74EA /* LaunchScreen.storyboard in Resources */,
 				CEADC8662F5E8F29000F74EA /* Assets.xcassets in Resources */,
-				E92D5DAA2FC32429005460E8 /* MediaQueryList.addEventListener.js in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
