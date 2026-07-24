@@ -17,6 +17,7 @@
 @property (nonatomic, strong) UILabel *errorDetailsLabel;
 @property (nonatomic, strong) UIButton *retryButton;
 @property (nonatomic, strong) UIButton *continueButton;
+@property (nonatomic, strong) UILabel *versionLabel;
 @property (nonatomic, copy, nullable) void (^retryHandler)(void);
 @property (nonatomic, copy, nullable) void (^continueHandler)(void);
 
@@ -129,6 +130,32 @@
         width,
         [_stack.widthAnchor constraintLessThanOrEqualToAnchor:self.widthAnchor constant:-48],
     ]];
+
+    _versionLabel = [[UILabel alloc] init];
+    _versionLabel.font = [UIFont systemFontOfSize:12];
+    _versionLabel.textColor = UIColor.tertiaryLabelColor;
+    _versionLabel.textAlignment = NSTextAlignmentCenter;
+    _versionLabel.text = [self versionString];
+    _versionLabel.translatesAutoresizingMaskIntoConstraints = NO;
+    [self addSubview:_versionLabel];
+
+    [NSLayoutConstraint activateConstraints:@[
+        [_versionLabel.centerXAnchor constraintEqualToAnchor:self.centerXAnchor],
+        [_versionLabel.bottomAnchor constraintEqualToAnchor:self.safeAreaLayoutGuide.bottomAnchor constant:-16],
+    ]];
+}
+
+- (NSString *)versionString {
+    NSDictionary *info = [NSBundle mainBundle].infoDictionary;
+    NSString *shortVersion = info[@"CFBundleShortVersionString"];
+    NSString *build = info[@"CFBundleVersion"];
+    if (shortVersion.length == 0) {
+        return @"";
+    }
+    if (build.length > 0 && ![build isEqualToString:shortVersion]) {
+        return [NSString stringWithFormat:@"Version %@ (%@)", shortVersion, build];
+    }
+    return [NSString stringWithFormat:@"Version %@", shortVersion];
 }
 
 - (void)setStage:(NSString *)stage detail:(NSString *)detail {
