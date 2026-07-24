@@ -27,3 +27,7 @@ Claude Legacy is a lightweight native iOS app that wraps claude.ai in a `WKWebVi
 |--------|-------------|--------|
 | iPhone 13 | 15.5 | ✅ Verified |
 | iPad 7 | 13.5.1 | ⚠️ UI issues, a bit slow |
+
+## Alternatives
+
+- [reynard-browser](https://github.com/minh-ton/reynard-browser) — a Gecko-based web browser for iOS 13+. It uses Firefox's engine instead of the outdated WebKit bundled with older iOS, so modern sites like claude.ai load again.
