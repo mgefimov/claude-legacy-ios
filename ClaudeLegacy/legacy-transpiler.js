@@ -7120,8 +7120,7 @@ var LegacyTranspiler = (() => {
       removeEventListener: noop,
       dispatchEvent: function() {
         return false;
-      },
-      overallProgress: null
+      }
     };
     resolveFinished(animation);
     return animation;
@@ -7472,8 +7471,79 @@ var LegacyTranspiler = (() => {
     for (let i = 0; i < source.length; i++) if (keep[i]) out += source[i];
     return out;
   }
-  function rawFromCooked(cooked) {
-    return cooked.replace(/\\/g, "\\\\").replace(/`/g, "\\`").replace(/\$\{/g, "\\${");
+  function cookRaw(raw) {
+    var _a;
+    let out = "";
+    for (let i = 0; i < raw.length; i++) {
+      const c = raw[i];
+      if (c !== "\\") {
+        out += c;
+        continue;
+      }
+      const n = raw[++i];
+      if (n === void 0) break;
+      if (n === "n") {
+        out += "\n";
+        continue;
+      }
+      if (n === "t") {
+        out += "	";
+        continue;
+      }
+      if (n === "r") {
+        out += "\r";
+        continue;
+      }
+      if (n === "b") {
+        out += "\b";
+        continue;
+      }
+      if (n === "f") {
+        out += "\f";
+        continue;
+      }
+      if (n === "v") {
+        out += "\v";
+        continue;
+      }
+      if (n === "\r") {
+        if (raw[i + 1] === "\n") i++;
+        continue;
+      }
+      if (n === "\n" || n === "\u2028" || n === "\u2029") continue;
+      if (n === "0" && !/[0-9]/.test((_a = raw[i + 1]) != null ? _a : "")) {
+        out += "\0";
+        continue;
+      }
+      if (n === "x") {
+        const hex = raw.slice(i + 1, i + 3);
+        if (/^[0-9a-fA-F]{2}$/.test(hex)) {
+          out += String.fromCharCode(parseInt(hex, 16));
+          i += 2;
+          continue;
+        }
+      }
+      if (n === "u") {
+        if (raw[i + 1] === "{") {
+          const end = raw.indexOf("}", i + 2);
+          const hex = end === -1 ? "" : raw.slice(i + 2, end);
+          if (/^[0-9a-fA-F]+$/.test(hex) && parseInt(hex, 16) <= 1114111) {
+            out += String.fromCodePoint(parseInt(hex, 16));
+            i = end;
+            continue;
+          }
+        } else {
+          const hex = raw.slice(i + 1, i + 5);
+          if (/^[0-9a-fA-F]{4}$/.test(hex)) {
+            out += String.fromCharCode(parseInt(hex, 16));
+            i += 4;
+            continue;
+          }
+        }
+      }
+      out += n;
+    }
+    return out;
   }
   function stripLiteralPattern(node) {
     if (typeof node.value !== "string") return;
@@ -7483,13 +7553,12 @@ var LegacyTranspiler = (() => {
     node.raw = JSON.stringify(node.value);
   }
   function stripTemplatePattern(tpl) {
-    var _a;
     let flat = "";
     const exprAt = [];
     for (let q = 0; q < tpl.quasis.length; q++) {
-      const cooked = (_a = tpl.quasis[q].value.cooked) != null ? _a : tpl.quasis[q].value.raw;
-      for (let k = 0; k < cooked.length; k++) {
-        flat += cooked[k];
+      const raw = tpl.quasis[q].value.raw;
+      for (let k = 0; k < raw.length; k++) {
+        flat += raw[k];
         exprAt.push(-1);
       }
       if (q < tpl.expressions.length) {
@@ -7499,7 +7568,7 @@ var LegacyTranspiler = (() => {
     }
     const keep = lookbehindKeepMask(flat);
     if (keep.every(Boolean)) return;
-    const cookedParts = [];
+    const rawParts = [];
     const expressions = [];
     let current2 = "";
     for (let i = 0; i < flat.length; i++) {
@@ -7507,29 +7576,20 @@ var LegacyTranspiler = (() => {
       if (exprAt[i] === -1) {
         current2 += flat[i];
       } else {
-        cookedParts.push(current2);
+        rawParts.push(current2);
         current2 = "";
         expressions.push(tpl.expressions[exprAt[i]]);
       }
     }
-    cookedParts.push(current2);
-    const quasis = cookedParts.map((cooked, idx) => ({
+    rawParts.push(current2);
+    tpl.quasis = rawParts.map((raw, idx) => ({
       type: "TemplateElement",
-      tail: idx === cookedParts.length - 1,
-      value: { raw: rawFromCooked(cooked), cooked },
+      tail: idx === rawParts.length - 1,
+      value: { raw, cooked: cookRaw(raw) },
       start: tpl.start,
       end: tpl.end
     }));
-    tpl.quasis = quasis;
     tpl.expressions = expressions;
-  }
-  function stripRegExpArg(arg) {
-    if (!arg) return;
-    if (arg.type === "Literal") stripLiteralPattern(arg);
-    else if (arg.type === "TemplateLiteral") stripTemplatePattern(arg);
-  }
-  function isRegExpCallee(callee) {
-    return callee.type === "Identifier" && callee.name === "RegExp";
   }
   var createLookbehindVisitor = () => {
     return {
@@ -7541,11 +7601,11 @@ var LegacyTranspiler = (() => {
         }
         stripLiteralPattern(node);
       },
-      CallExpression(node) {
-        if (isRegExpCallee(node.callee)) stripRegExpArg(node.arguments[0]);
-      },
-      NewExpression(node) {
-        if (isRegExpCallee(node.callee)) stripRegExpArg(node.arguments[0]);
+      // Same reasoning for template literals, tagged or not: the pattern is often
+      // written as String.raw`(?<!x)y` or assembled through a variable, so every
+      // template is scanned rather than only direct RegExp arguments.
+      TemplateLiteral(node) {
+        stripTemplatePattern(node);
       }
     };
   };
@@ -8240,7 +8300,7 @@ var LegacyTranspiler = (() => {
   }
 
   // package.json
-  var version2 = "0.1.17";
+  var version2 = "0.1.22";
 
   // src/index.ts
   var options;

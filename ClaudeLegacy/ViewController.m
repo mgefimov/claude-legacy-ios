@@ -86,38 +86,10 @@ static const NSTimeInterval kLoadingTimeout = 60.0;
     [_webView.configuration.userContentController addUserScript:script];
 }
 
-/// Rewrites CSS that newer WebKit parses natively but older versions silently
-/// drop. Each fix is paired with the iOS version that made it unnecessary, so a
-/// system new enough gets nothing injected at all — not even the pipeline.
-- (void)injectCSSCompatibilityFixes {
-    // @{script, major, minor} — the version is the one where WebKit gained the
-    // feature. Order is preserved: it becomes the order of the CSS transforms.
-    NSArray<NSArray *> *fixes = @[
-        @[@"css-viewport-units", @15, @4], // dvh/svh/lvh units, Safari 15.4
-    ];
-
-    NSMutableArray<NSString *> *needed = [NSMutableArray array];
-    for (NSArray *fix in fixes) {
-        if (![PolyfillsLoader isIOSVersionOrNewer:[fix[1] integerValue]
-                                            minor:[fix[2] integerValue]]) {
-            [needed addObject:fix[0]];
-        }
-    }
-
-    if (needed.count == 0) {
-        return; // nothing to patch on this system
-    }
-
-    [self injectScriptNamed:@"css-compat"]; // the pipeline the fixes register into
-    for (NSString *name in needed) {
-        [self injectScriptNamed:name];
-    }
-    NSLog(@"[inject] CSS fixes: %@", [needed componentsJoinedByString:@", "]);
-}
-
 - (void)injectCustomCSS {
     NSString *css = @"button[data-testid='login-with-google'] { display: none !important; }"
-    "button[data-testid='login-with-google'] + p { display: none !important; }";
+    "button[data-testid='login-with-google'] + p { display: none !important; }"
+    ".dframe-root[data-variant='web'][data-collapsed][data-hovering]:not([data-wco]) .dframe-sidebar-body { opacity: 1 !important; }";
     NSString *js = [NSString stringWithFormat:
                     @"(function(){"
                     "var s=document.createElement('style');"
@@ -160,7 +132,7 @@ static const NSTimeInterval kLoadingTimeout = 60.0;
 
     [self.webView addObserver:self forKeyPath:@"estimatedProgress" options:0 context:NULL];
 
-    [self showLoadingOverlay];
+    //[self showLoadingOverlay];
 
     // Injecting the polyfills reads a few hundred files off disk, so give the
     // overlay a chance to reach the screen before blocking the main thread.
@@ -181,7 +153,6 @@ static const NSTimeInterval kLoadingTimeout = 60.0;
     [self injectCustomCSS];
     [self injectScriptNamed:@"legacy-transpiler"];
     [self injectScriptNamed:@"patch"];
-    [self injectCSSCompatibilityFixes];
     [PolyfillsLoader injectPolyfillsIntoController:_webView.configuration.userContentController];
 
     [self.loadingOverlay setProgress:0.05 animated:YES];
