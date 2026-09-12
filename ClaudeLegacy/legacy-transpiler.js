@@ -7432,8 +7432,8 @@ var LegacyTranspiler = (() => {
     }
     return -1;
   }
-  function lookbehindKeepMask(source) {
-    const keep = new Array(source.length).fill(true);
+  function lookbehindRegions(source) {
+    const regions = [];
     let inClass = false;
     let i = 0;
     while (i < source.length) {
@@ -7458,18 +7458,42 @@ var LegacyTranspiler = (() => {
           i++;
           continue;
         }
-        for (let j = i; j <= end; j++) keep[j] = false;
+        regions.push([i, end]);
         i = end + 1;
         continue;
       }
       i++;
     }
-    return keep;
+    return regions;
   }
-  function applyMask(source, keep) {
-    let out = "";
-    for (let i = 0; i < source.length; i++) if (keep[i]) out += source[i];
-    return out;
+  function emptyGroupOfLength(len) {
+    const inner = len - "(?:)".length;
+    const units = Math.floor(inner / "a{0}".length);
+    return "(?:" + "a{0}".repeat(units) + "|".repeat(inner - units * "a{0}".length) + ")";
+  }
+  function replaceLookbehinds(flat, exprAt) {
+    if (flat.indexOf("(?<=") === -1 && flat.indexOf("(?<!") === -1) return null;
+    const regions = lookbehindRegions(flat);
+    if (regions.length === 0) return null;
+    let text = "";
+    const outExprAt = [];
+    let r = 0;
+    for (let i = 0; i < flat.length; i++) {
+      if (r < regions.length && i === regions[r][0]) {
+        const [start, end] = regions[r++];
+        let literals = 0;
+        for (let j = start; j <= end; j++) if (!exprAt || exprAt[j] === -1) literals++;
+        for (const c of emptyGroupOfLength(literals)) {
+          text += c;
+          outExprAt.push(-1);
+        }
+        i = end;
+        continue;
+      }
+      text += flat[i];
+      outExprAt.push(exprAt ? exprAt[i] : -1);
+    }
+    return { text, exprAt: outExprAt };
   }
   function cookRaw(raw) {
     var _a;
@@ -7510,7 +7534,7 @@ var LegacyTranspiler = (() => {
         if (raw[i + 1] === "\n") i++;
         continue;
       }
-      if (n === "\n" || n === "\u2028" || n === "\u2029") continue;
+      if (n === "\n" || n.charCodeAt(0) === 8232 || n.charCodeAt(0) === 8233) continue;
       if (n === "0" && !/[0-9]/.test((_a = raw[i + 1]) != null ? _a : "")) {
         out += "\0";
         continue;
@@ -7547,9 +7571,9 @@ var LegacyTranspiler = (() => {
   }
   function stripLiteralPattern(node) {
     if (typeof node.value !== "string") return;
-    const keep = lookbehindKeepMask(node.value);
-    if (keep.every(Boolean)) return;
-    node.value = applyMask(node.value, keep);
+    const result = replaceLookbehinds(node.value);
+    if (!result) return;
+    node.value = result.text;
     node.raw = JSON.stringify(node.value);
   }
   function stripTemplatePattern(tpl) {
@@ -7566,19 +7590,18 @@ var LegacyTranspiler = (() => {
         exprAt.push(q);
       }
     }
-    const keep = lookbehindKeepMask(flat);
-    if (keep.every(Boolean)) return;
+    const result = replaceLookbehinds(flat, exprAt);
+    if (!result) return;
     const rawParts = [];
     const expressions = [];
     let current2 = "";
-    for (let i = 0; i < flat.length; i++) {
-      if (!keep[i]) continue;
-      if (exprAt[i] === -1) {
-        current2 += flat[i];
+    for (let i = 0; i < result.text.length; i++) {
+      if (result.exprAt[i] === -1) {
+        current2 += result.text[i];
       } else {
         rawParts.push(current2);
         current2 = "";
-        expressions.push(tpl.expressions[exprAt[i]]);
+        expressions.push(tpl.expressions[result.exprAt[i]]);
       }
     }
     rawParts.push(current2);
@@ -7595,7 +7618,9 @@ var LegacyTranspiler = (() => {
     return {
       Literal(node) {
         if (node.regex) {
-          node.regex.pattern = applyMask(node.regex.pattern, lookbehindKeepMask(node.regex.pattern));
+          const result = replaceLookbehinds(node.regex.pattern);
+          if (!result) return;
+          node.regex.pattern = result.text;
           node.raw = "/".concat(node.regex.pattern, "/").concat(node.regex.flags);
           return;
         }
@@ -8300,7 +8325,7 @@ var LegacyTranspiler = (() => {
   }
 
   // package.json
-  var version2 = "0.1.22";
+  var version2 = "0.1.24";
 
   // src/index.ts
   var options;
